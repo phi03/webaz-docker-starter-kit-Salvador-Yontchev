@@ -27,8 +27,7 @@
             <ul id="liste-inventaire">
                 <!-- Les éléments de l'inventaire seront ajoutés ici dynamiquement -->
             </ul>
-            <button id="btn-fermer-inventaire" class="btn-menu">Fermer</button>
-    </div>
+        </div>
 
     <script src="../assets/js/jeu.js"></script>
 </body>
