@@ -53,13 +53,14 @@ Flight::route('GET /objets', function () {
     }
 
     else {
-        $sql = "SELECT id, nom, img, type_objet, ST_AsGeoJSON(geom) AS geom FROM objets WHERE depart = TRUE";
+        $sql = "SELECT id, nom, img, type_objet, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE depart = TRUE";
         $query = pg_query($link, $sql);
         $results = pg_fetch_all($query);
     }
 
     Flight::json($results);
 });
+
 
 Flight::route('GET /score', function () {
     $host = 'db';
