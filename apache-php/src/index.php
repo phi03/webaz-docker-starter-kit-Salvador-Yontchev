@@ -47,13 +47,13 @@ Flight::route('GET /objets', function () {
 
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $N = $_GET['id'];
-        $sql = "SELECT nom, img, type_objet, indice, objet_bloquant, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE id = '" . $N . "'";
+        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE id = '" . $N . "'";
         $query = pg_query($link, $sql);
         $results = pg_fetch_all($query);
     }
 
     else {
-        $sql = "SELECT nom, img, type_objet, ST_AsGeoJSON(geom) AS geom FROM objets WHERE depart = TRUE";
+        $sql = "SELECT id, nom, img, type_objet, ST_AsGeoJSON(geom) AS geom FROM objets WHERE depart = TRUE";
         $query = pg_query($link, $sql);
         $results = pg_fetch_all($query);
     }

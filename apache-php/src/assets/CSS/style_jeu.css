@@ -71,6 +71,24 @@ button {
     background-color: rgba(255, 255, 255, 0.8);
 }
 
+#liste-inventaire {
+    list-style-type: none;
+    padding: 0;
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+
+.objet-inventaire {
+    width: 80px;   
+    height: 80px;  
+    object-fit: contain; 
+    margin: 5px;
+    border: 3px solid white; 
+    border-radius: 8px;      
+}
+
+
 #map { 
     grid-column: 1;
     height: 70vh;

@@ -30,8 +30,10 @@
         <div class="inventaire">
             <h2>Inventaire</h2>
             <ul id="liste-inventaire">
-                <!-- Les éléments de l'inventaire seront ajoutés ici dynamiquement -->
-            </ul>
+                <li v-for="objet in inventaire" :key="objet.id">
+                <img :src="objet.img" :alt="objet.nom" :title="objet.nom" class="objet-inventaire">
+        </li>
+    </ul>
         </div>
 
     <script src="../assets/js/jeu.js"></script>
