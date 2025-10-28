@@ -6,6 +6,7 @@ Vue.createApp({
         objetsCarte: [],           // Liste des objets actuellement sur la carte
         map: null,                 //Instance de la carte Leaflet
         objet_selectionne: null,   // Objet actuellement sélectionné dans l'inventaire
+        code : '',                 // Code entré par l'utilisateur
 
     };
     },
@@ -13,6 +14,20 @@ Vue.createApp({
 
     },
     methods: {
+
+        submit(obj, codeSaisi) {
+            fetch(`/objets?id=${obj.id}`)
+                .then(res => res.json())
+                .then(data => {
+                    let codeCorrect = data[0]['code'];
+                    if(codeSaisi === codeCorrect) {
+                        this.debloquer_code(obj);
+                        alert('Code correct ! Objet débloqué.');
+                    } else {
+                        alert('Code incorrect, réessayez.');
+                    }
+                });
+        },
 
         // Ajout d'un marker sur la carte
         ajouterMarker(obj) {
@@ -48,14 +63,32 @@ Vue.createApp({
                                                 this.afficherIndice(obj);
                                             }
                                         }
-                                        else if(obj.type_objet === "bloqué_par_code"){return;}
+                                        else if(obj.type_objet === "bloqué_par_code"){
+                                            obj.leafletMarker.bindPopup(`
+                                                <div>
+                                                    <h3>Entrez le code pour débloquer cet objet:</h3>
+                                                    <form id="codeForm">
+                                                        <input type="text" id="codeInput" required />
+                                                        <button type="submit">Valider</button>
+                                                    </form>
+                                                </div>`).openPopup();
+                                                                                                                //POUR MOI  
+                                                console.log('ok')                   
+                                                let form = document.getElementById("codeForm");                  //Récupère le formulaire
+                                                form.addEventListener("submit", (e) => {                         //Ajoute un écouteur d'évènement sur le formulaire
+                                                    e.preventDefault();                                          //Empêche le rechargement de la page
+                                                    let codeValue = document.getElementById("codeInput").value;  //Récupère la valeur entrée
+                                                    this.submit(obj, codeValue);                                 //Appelle la méthode submit avec l'objet et le code entré
+                                                    });
+                                        }
+
                                         else if (obj.type_objet === "indication"){this.afficherIndice(obj)}
                                         
                                         
                                         }); 
 
             // Si c’est un objet de départ, on l’ajoute à la carte
-            if (obj.depart) 
+            if (obj.depart || obj.zoom_min === null) 
             {
                 marker.addTo(this.map);
             } 
@@ -159,6 +192,25 @@ Vue.createApp({
             }
         },
 
+        debloquer_code(obj) {
+
+            this.map.removeLayer(obj.leafletMarker);
+            obj.leafletMarker = null;
+
+            if (obj.objet_libere !== null) {
+
+            fetch(`/objets?id=${obj.objet_libere}`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) { // Vérifie si l'objet libéré existe
+                        let obj_libere = data[0];
+                        this.ajouterMarker(obj_libere);
+                    }
+                });
+            }
+        },
+
+
         // Débloquer un objet bloqué par un autre objet
         debloquer(obj) {
 
@@ -170,16 +222,17 @@ Vue.createApp({
 
         this.objet_selectionne = null;
 
-        if (obj.id_obj_libere) {
-            fetch(`/objets?id=${obj.id_obj_libere}`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.length > 0) { // Vérifie si l'objet libéré existe
-                        let objet_libere = data[0];
-                        this.ajouterMarker(objet_libere);
-                    }
-                });
-        }
+        // Ajouter l'objet libéré à la carte
+        console.log(obj);
+        fetch(`/objets?id=${obj.objet_libere}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.length > 0) { // Vérifie si l'objet libéré existe
+                    let obj_libere = data[0];
+                    this.ajouterMarker(obj_libere);
+                }
+            });
+    
     }
 
 },

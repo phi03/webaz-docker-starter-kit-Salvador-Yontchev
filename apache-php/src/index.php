@@ -47,20 +47,20 @@ Flight::route('GET /objets', function () {
 
     if (isset($_GET['id']) && !empty($_GET['id'])) {
         $N = $_GET['id'];
-        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE id = '" . $N . "'";
+        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, objet_libere, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE id = '" . $N . "'";
         $query = pg_query($link, $sql);
         $results = pg_fetch_all($query);
     }
 
     else if (isset($_GET['zoom']) && !empty($_GET['zoom'])) {
         $zoom = $_GET['zoom'];
-        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE zoom_min <= '" . $zoom . "'";
+        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, objet_libere, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE zoom_min <= '" . $zoom . "'";
         $query = pg_query($link, $sql);
         $results = pg_fetch_all($query);
     }
 
     else {
-        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE depart = TRUE";
+        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, objet_libere, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE depart = TRUE";
         $query = pg_query($link, $sql);
         $results = pg_fetch_all($query);
     }
@@ -68,7 +68,20 @@ Flight::route('GET /objets', function () {
     Flight::json($results);
 });
 
+Flight::route('POST /score', function () {
+    $host = 'db';
+    $port = 5432;
+    $dbname = 'mydb';
+    $user = 'postgres';
+    $pass = 'postgres';
+    $link = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$pass");
 
+    $pseudo = $_POST['pseudo'];
+    $score = $_POST['score'];
+    $sql = "INSERT INTO scores (pseudo, score) VALUES ('$pseudo', $score)";
+    pg_query($link, $sql);
+    Flight::json(['status' => 'success']);
+});
 
 Flight::route('GET /score', function () {
     $host = 'db';
