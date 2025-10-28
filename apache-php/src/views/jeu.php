@@ -30,7 +30,13 @@
             <h2>Inventaire</h2>
             <ul id="liste-inventaire">
                 <li v-for="objet in inventaire" :key="objet.id">
-                <img :src="objet.img" :alt="objet.nom" :title="objet.nom" class="objet-inventaire">
+                <img 
+                :src="objet.img" 
+                :alt="objet.nom" 
+                :title="objet.nom" 
+                class="objet-inventaire"
+                :class="{ 'selected': objet === objetSelectionne }"
+                @click="selectionner_Objet(objet)" />
         </li>
     </ul>
         </div>

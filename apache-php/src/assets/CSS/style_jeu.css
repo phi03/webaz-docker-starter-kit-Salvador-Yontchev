@@ -88,6 +88,9 @@ button {
     border-radius: 8px;      
 }
 
+.objet-inventaire.selected {
+    border: 3px solid rgb(255, 238, 0); 
+}
 
 #map { 
     grid-column: 1;

@@ -52,14 +52,22 @@ Flight::route('GET /objets', function () {
         $results = pg_fetch_all($query);
     }
 
+    else if (isset($_GET['zoom']) && !empty($_GET['zoom'])) {
+        $zoom = $_GET['zoom'];
+        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE zoom_min <= '" . $zoom . "'";
+        $query = pg_query($link, $sql);
+        $results = pg_fetch_all($query);
+    }
+
     else {
-        $sql = "SELECT id, nom, img, type_objet, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE depart = TRUE";
+        $sql = "SELECT id, nom, img, type_objet, indice, objet_bloquant, code, ST_AsGeoJSON(geom) AS geom, zoom_min FROM objets WHERE depart = TRUE";
         $query = pg_query($link, $sql);
         $results = pg_fetch_all($query);
     }
 
     Flight::json($results);
 });
+
 
 
 Flight::route('GET /score', function () {
