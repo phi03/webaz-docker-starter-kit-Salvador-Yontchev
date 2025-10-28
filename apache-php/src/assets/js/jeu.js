@@ -4,12 +4,17 @@ Vue.createApp({
     return {
         inventaire : [],           // Liste des objets dans l'inventaire
         objetsCarte: [],           // Liste des objets actuellement sur la carte
-        map: null,                 //Instance de la carte Leaflet
+        map: null,                 // Instance de la carte Leaflet
         objet_selectionne: null,   // Objet actuellement sélectionné dans l'inventaire
         code : '',                 // Code entré par l'utilisateur
+        
+        messageTexte: '',
+
+        messageInfo: '',
+        
         jeuEnCours: false,
-        tempsTotal: 300,           // 5 minutes
-        tempsRestant: 300,
+        tempsTotal: 60,           // 5 minutes
+        tempsRestant: 60,
         timer_interval: null,
     };
     },
@@ -18,7 +23,19 @@ Vue.createApp({
     },
     methods: {
 
+        afficherMessage(texte) {
+            this.messageTexte = texte;
+        },
+        fermerMessage() {
+            this.messageTexte = '';
+        },
+
         demarrerJeu() {
+
+            if(this.messageTexte !== '') {
+                this.fermerMessage();
+            }
+
             this.tempsRestant = this.tempsTotal;
             this.jeuEnCours = true;
 
@@ -40,15 +57,24 @@ Vue.createApp({
 
         terminerJeu() {
             this.jeuEnCours = false;
-            clearInterval(this.timer_interval);
-            // Ici tu peux demander le pseudo et envoyer le temps à la BDD
+            clearInterval(this.timer_interval); // stop le timer
+
+            if (this.tempsRestant <= 0) {
+                this.afficherMessage("🐟​Il n'y a plus de temps ! Vous avez perdu. 🐟​");
+                return; // pas d'envoi de score
+            }
+
+            // Si le joueur a terminé avant la fin du temps
             let pseudo = prompt("Entrez votre pseudo pour le classement :");
+            
             fetch('/score', {
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ pseudo: pseudo, temps: this.temps })
-            }).then(res => res.json()).then(data => {
-                alert("Score enregistré !");
+                body: JSON.stringify({ pseudo: pseudo, tempsRestant: this.tempsRestant })
+            })
+            .then(res => res.json())
+            .then(data => {
+                this.afficherMessage("Bravo ! Vous avez réussi.🏆​");
             });
         },
 
@@ -59,9 +85,9 @@ Vue.createApp({
                     let codeCorrect = data[0]['code'];
                     if(codeSaisi === codeCorrect) {
                         this.debloquer_code(obj);
-                        alert('Code correct ! Objet débloqué.');
+                        this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
                     } else {
-                        alert('Code incorrect, réessayez.');
+                        this.afficherMessage('Code incorrect, retentez votre chance.🔒​');
                     }
                 });
         },

@@ -21,7 +21,7 @@
             <span>Temps restant :</span>
             <span>{{ formatTemps(tempsRestant) }}</span>
         </div>
-        
+
         <h1>Nom du jeu</h1>
 
         <div id="menu">
@@ -47,7 +47,13 @@
                 @click="selectionner_Objet(objet)" />
         </li>
     </ul>
-        </div>
+
+    </div>
+
+    <div id="message" v-if="messageTexte" class="message-popup">
+        {{ messageTexte }}
+        <button @click="fermerMessage">OK</button>
+    </div>
 
     <script src="../assets/js/jeu.js"></script>
 </body>
