@@ -9,17 +9,33 @@
 </head>
 
 <body>
-    <div class ="app">
+        <div id ="app">
 
-        <h1>Nom du Jeu</h1>
+            <h1>Nom du Jeu</h1>
 
-        <button onclick="window.location.href='/jeu'">Commencer le jeu</button>
+            <button onclick="window.location.href='/jeu'">Commencer le jeu</button>
 
-        <button onclick="window.location.href='/hall_of_fame'">Hall of fame</button>
-        <button onclick="window.location.href='/info'">Infos</button>
+            <button @click='f_messagefame'>Hall of fame</button>
+            <button @click='f_messageInfo'>Infos</button>
 
+            <div id="message" v-if="messageInfo" class="message-popup">
+                <div id ="Info" v-html="messageInfo"></div>
+                <button @click="fermerMessageInfo">OK</button>
+            </div>
 
-    </div>
+            <div id="message" v-if="messagefame" class="message-popup">
+                <div id="fame">
+                    <h1>Hall of Fame</h1>
+                    <ol>
+                        <li v-for="score in topScores" :key="score.id">
+                            {{ score.pseudo }} - {{ score.temps }} s
+                        </li>
+                    </ol>
+                    <button @click="fermerMessagefame">OK</button>
+                </div>
+            </div>
+
+        </div>
     <script src="../assets/js/accueil.js"></script>
 </body>
 </html>

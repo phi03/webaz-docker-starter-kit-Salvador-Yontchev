@@ -91,11 +91,10 @@ Flight::route('GET /score', function () {
     $pass = 'postgres';
     $link = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$pass");
 
-    $sql = "SELECT pseudo, score FROM scores ORDER BY score DESC LIMIT 10";
+    $sql = "SELECT pseudo, temps FROM scores ORDER BY temps DESC LIMIT 10 ";
     $query = pg_query($link, $sql);
     $results = pg_fetch_all($query);
     Flight::json($results);
-    Flight::render('hall_of_fame');
 });
 Flight::start();
 

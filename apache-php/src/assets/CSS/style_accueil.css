@@ -20,7 +20,7 @@ body::before {
     z-index: 0;
 }
 
-.app {
+#app {
     position: relative;
     margin : auto;
     display: grid;
@@ -38,10 +38,81 @@ h1 {
     grid-column: 1;
     margin-top: 0;
     margin-bottom: 30px;
+    text-align: center;
+    font-family: 'Angkor', sans-serif; 
     font-size: 5em;
     color: white;
     -webkit-text-stroke: 1px black;
 
+}
+
+#Info h1, h2{
+    background-color: lightblue;
+    border-radius: 20px;
+    color: white;
+    -webkit-text-stroke: 1px black;
+}
+
+#Info p{
+    grid-column: 1;
+    font-size: 1.2em;
+    color: #333;
+    text-align: justify;
+    margin-bottom: 20px;
+}
+
+#Info ul li {
+    list-style-type: none;
+    position: relative;
+    padding-left: 25px; 
+    text-align: left;
+    font-size: 1.1em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#Info ul li::before {
+    content: "⚓​";     
+    position: absolute;
+    left: 0;
+}
+
+#fame{ 
+    grid-column: 1;
+    font-size: 1.2em;
+    color: #333;
+    text-align: justify;
+    margin-bottom: 20px;
+    min-height: 660px;
+
+}
+
+#fame h1 {
+    background-color: lightblue;
+    font-size: 4em;
+    border-radius: 20px;
+    color: white;
+    -webkit-text-stroke: 1px black;
+
+}
+
+#fame ol li {
+    list-style-type: decimal ;
+    position: relative;
+    padding-left: 25px; 
+    text-align: left;
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+
+h2 {
+    grid-column: 1;
+    margin-bottom: 20px;
+    font-family: 'Angkor', sans-serif; 
+    font-size: 2em;
+    text-align: center;
 }
 
 form {
@@ -68,5 +139,68 @@ button {
 button:hover {
     background-color: lightblue;
 }
+
+#message{
+    display:grid;
+    grid-column: 1;
+    grid-row: 2;
+    justify-content: center; 
+    align-items: center; 
+}
+
+.message-popup {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: rgba(255, 255, 255);
+    border: 2px solid #333;
+    border-radius: 15px;
+    padding: 30px;
+    text-align: left;            
+    z-index: 1000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+
+    width: 60%;                  
+    max-height: 70vh;            
+    overflow-y: auto;            /* permet de scroller à l’intérieur */
+}
+
+.message-popup::-webkit-scrollbar {
+    width: 10px;
+}
+.message-popup::-webkit-scrollbar-thumb {
+    background-color: rgba(100, 100, 100, 0.5);
+    border-radius: 5px;
+}
+.message-popup::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(50, 50, 50, 0.7);
+}
+
+.message-popup button {
+    display: flex;
+    flex-direction: column; 
+    align-items: center;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 8px 20px;
+    font-size: 1em;
+    cursor: pointer;
+    height: 50px;
+    width: 150px;
+    font-family: 'Angkor', sans-serif; 
+    color: white;
+    -webkit-text-stroke: 1px black;
+}
+
+#foot {
+    text-align: center;
+    font-size: 1em;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+
+
 
 
