@@ -13,9 +13,10 @@
 
         <h1>Nom du Jeu</h1>
 
-        <button class="btn-menu" @click="goTo('jeu')">Commencer le jeu</button>
-        <button class="btn-menu" @click="goTo('hall_of_fame')">Hall of fame</button>
-        <button class="btn-menu" @click="goTo('infos')">Infos</button>
+        <button onclick="window.location.href='/jeu'">Commencer le jeu</button>
+
+        <button onclick="window.location.href='/hall_of_fame'">Hall of fame</button>
+        <button onclick="window.location.href='/info'">Infos</button>
 
 
     </div>

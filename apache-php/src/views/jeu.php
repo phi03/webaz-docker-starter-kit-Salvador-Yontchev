@@ -20,9 +20,8 @@
         <h1>Nom du jeu</h1>
 
         <div id="menu">
-            <button id="btn-infos" class="btn-menu">Menu</button>
+            <button onclick="window.location.href='/'">Menu</button>
             <button id="btn-triche" class="btn-menu">Triche</button>
-            <button id="btn-fame" class="btn-menu">Hall of fame</button>
         </div>
 
         <div id="map"></div>
