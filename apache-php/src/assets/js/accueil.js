@@ -15,7 +15,7 @@ Vue.createApp({
       f_messageInfo() {
         this.messageInfo = `<h1> Bienvenue sur ....... ! </h1> 
         <p>Ohé du bateau ! Bien le bonjour mousaillons !
-        Êtes-vous prêts à relever le défi ? Avant de te lancer n'hésites pas à jeter un oeil aux indications de jeu... Parole de Pirate ! </p>
+        Êtes-vous prêts à relever le défi ? Avant de vous lancer n'hésitez pas à jeter un oeil aux indications de jeu... Parole de Pirate ! </p>
 
         <h2> Instructions du jeu : </h2>
         <ul>
@@ -23,16 +23,16 @@ Vue.createApp({
             <li>Explorez les différents objets interactifs présents sur la carte.</li>
             <li>Suivez les indices disséminés dans l'environnement du jeu pour trouver les objets nécessaires à votre quête ! </li>
             <li>Prenez garde certains objets ne sont peut être pas là où vous croyez...</li>
-            <li>Chaque code correct vous rapproche de la découverte du trésor final.</li>
-            <li>Certains objets sont bloqués par d'autres... Cherchez les dans la carte </li>
-            <li>Si vous vous sentez perdus un bouton de triche est à votre disposition </li>
+            <li>Chaque code correct vous rapproche du trésor final.</li>
+            <li>Certains objets sont bloqués par d'autres... Cherchez les dans la carte. </li>
+            <li>Si vous vous sentez perdus un bouton de triche est à votre disposition. </li>
             <li>Amusez-vous et bonne chance dans votre quête !</li>
         </ul>
 
         <h2> Pourquoi ce jeu ? </h2>
         <p>Ce jeu d'escape game en ligne est conçu pour stimuler votre esprit, encourager la résolution de problèmes et offrir une expérience immersive sur 
         le thème du transport maritime. En relevant les défis proposés, vous aurez l'occasion de comprendre l'importance stratégique des grandes routes maritimes à travers le monde,
-        dans un contexte à fortes pressions géopolitiuqes mais aussi environnementales. Alors laissez vous transporter dans un univers d'aventure et de mystère.
+        dans un contexte à fortes pressions géopolitiques mais aussi environnementales. Alors laissez vous transporter dans un univers d'aventure et de mystère.
         </p>
 
         <h2> A l'abordage ! </h2>
