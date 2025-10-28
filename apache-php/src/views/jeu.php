@@ -35,7 +35,7 @@
                 :alt="objet.nom" 
                 :title="objet.nom" 
                 class="objet-inventaire"
-                :class="{ 'selected': objet === objetSelectionne }"
+                :class="{ 'selected': objet === objet_selectionne }"
                 @click="selectionner_Objet(objet)" />
         </li>
     </ul>

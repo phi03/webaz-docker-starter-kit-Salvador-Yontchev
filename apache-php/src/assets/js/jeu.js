@@ -2,10 +2,10 @@
 Vue.createApp({
   data() {
     return {
-        inventaire : [],
-        objetsCarte: [],
-        map: null,
-        objet_selectionne: null,
+        inventaire : [],           // Liste des objets dans l'inventaire
+        objetsCarte: [],           // Liste des objets actuellement sur la carte
+        map: null,                 //Instance de la carte Leaflet
+        objet_selectionne: null,   // Objet actuellement sélectionné dans l'inventaire
 
     };
     },
@@ -29,17 +29,18 @@ Vue.createApp({
                 })
             });
 
+            // Ajout de l'atribut referencant le marker Leaflet à l'objet
             obj.leafletMarker = marker;
 
             // Faire une disjoinction de cas sur le type de l'objet
+
             marker.on('click', () => {if(obj.type_objet === "récupérable") {this.ajouterObjetInventaire(obj)}
                                         else if(obj.type_objet === "code"){this.code(obj)}
                                         else if(obj.type_objet === "bloqué_par_objet"){
 
-                                            console.log('objet',this.objet_selectionne.nom, obj.objet_bloquant);
+                                            console.log('objet',this.objet_selectionne, obj.objet_bloquant);
                                             
                                             if (this.objet_selectionne && this.objet_selectionne.nom === obj.objet_bloquant) {
-                                                this.objet_selectionne = null;
                                                 this.debloquer(obj);
                                             }
                                             else {
@@ -153,6 +154,8 @@ Vue.createApp({
             } 
             else {
                 this.objet_selectionne = obj; // clic = sélectionne l’objet 
+                console.log('Objet sélectionné :', this.objet_selectionne);
+                console.log(this.inventaire)
             }
         },
 
@@ -161,6 +164,11 @@ Vue.createApp({
 
         this.map.removeLayer(obj.leafletMarker);
         obj.leafletMarker = null;
+
+        // Retirer l'objet utilisé de l'inventaire
+        this.inventaire = this.inventaire.filter(o => o.id !== this.objet_selectionne.id);
+
+        this.objet_selectionne = null;
 
         if (obj.id_obj_libere) {
             fetch(`/objets?id=${obj.id_obj_libere}`)
