@@ -7,13 +7,50 @@ Vue.createApp({
         map: null,                 //Instance de la carte Leaflet
         objet_selectionne: null,   // Objet actuellement sélectionné dans l'inventaire
         code : '',                 // Code entré par l'utilisateur
-
+        jeuEnCours: false,
+        tempsTotal: 300,           // 5 minutes
+        tempsRestant: 300,
+        timer_interval: null,
     };
     },
     computed: {
 
     },
     methods: {
+
+        demarrerJeu() {
+            this.tempsRestant = this.tempsTotal;
+            this.jeuEnCours = true;
+
+            this.timer_interval = setInterval(() => {
+                if (this.tempsRestant > 0) {
+                this.tempsRestant--;
+                } else {
+                this.terminerJeu();
+                }
+            }, 1000);
+        },
+
+        formatTemps(t) {
+            let min = Math.floor(t / 60);
+            let sec = t % 60;
+            return `${min.toString().padStart(2,'0')} : ${sec.toString().padStart(2,'0')}`;
+        },
+
+
+        terminerJeu() {
+            this.jeuEnCours = false;
+            clearInterval(this.timer_interval);
+            // Ici tu peux demander le pseudo et envoyer le temps à la BDD
+            let pseudo = prompt("Entrez votre pseudo pour le classement :");
+            fetch('/score', {
+                method: 'POST',
+                headers: {'Content-Type':'application/json'},
+                body: JSON.stringify({ pseudo: pseudo, temps: this.temps })
+            }).then(res => res.json()).then(data => {
+                alert("Score enregistré !");
+            });
+        },
 
         submit(obj, codeSaisi) {
             fetch(`/objets?id=${obj.id}`)
@@ -50,7 +87,9 @@ Vue.createApp({
             // Faire une disjoinction de cas sur le type de l'objet
 
             marker.on('click', () => {if(obj.type_objet === "récupérable") {this.ajouterObjetInventaire(obj)}
-                                        else if(obj.type_objet === "code"){this.code(obj)}
+
+                                        else if(obj.type_objet === "code"){this.f_code(obj)}
+
                                         else if(obj.type_objet === "bloqué_par_objet"){
 
                                             console.log('objet',this.objet_selectionne, obj.objet_bloquant);
@@ -66,10 +105,11 @@ Vue.createApp({
                                         else if(obj.type_objet === "bloqué_par_code"){
                                             obj.leafletMarker.bindPopup(`
                                                 <div>
-                                                    <h3>Entrez le code pour débloquer cet objet:</h3>
+                                                    <h3> Veuillez saisir le code : </h3>
                                                     <form id="codeForm">
-                                                        <input type="text" id="codeInput" required />
-                                                        <button type="submit">Valider</button>
+                                                        <input type="text" id="codeInput" placeholder="Code..." maxlength="4" required/>
+
+                                                        <button id ="valider" type="submit">Valider</button>
                                                     </form>
                                                 </div>`).openPopup();
                                                                                                                 //POUR MOI  
@@ -158,10 +198,10 @@ Vue.createApp({
                         }
                     }
                 });
-    },
+        },
 
         // Affichage du code
-        code(obj) {
+        f_code(obj) {
             fetch(`/objets?id=${obj.id}`)
                 .then(res => res.json())
                 .then(data => {

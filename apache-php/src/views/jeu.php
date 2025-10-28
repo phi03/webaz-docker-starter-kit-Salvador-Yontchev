@@ -17,10 +17,17 @@
 <body>
     <div id ="app">
 
+        <div id="timer" class="timer">
+            <span>Temps restant :</span>
+            <span>{{ formatTemps(tempsRestant) }}</span>
+        </div>
+        
         <h1>Nom du jeu</h1>
 
         <div id="menu">
-            <button id="btn-demarrer" class="btn-menu">Start</button>
+
+            <button @click="demarrerJeu">Start</button>
+            
             <button onclick="window.location.href='/'">Menu</button>
             <button id="btn-triche" class="btn-menu">Triche</button>
         </div>

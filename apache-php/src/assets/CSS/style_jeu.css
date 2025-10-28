@@ -13,13 +13,39 @@ body {
 }
 
 #app {
-    grid-template-columns: 3fr 1fr;
+    grid-template-columns: 2fr 3fr 1fr;
     grid-column: 1 / span 2;
     display: grid;
 }
 
-h1 {
+.timer {
+
     grid-column: 1;
+    grid-row: 1;
+
+    font-size: 1.2em;
+    color: #333;
+    background-color: white;
+    border : 2px solid #333;
+    border-radius: 10px;
+
+    margin-bottom : 20px;
+    margin-top: 20px;
+    margin-left: 40px;
+    margin-right: 40px;
+    padding-top: 20px;
+    padding-bottom: 10px;
+
+    display: flex;
+    flex-direction: column; /* les éléments s’empilent verticalement */
+    align-items: center;    /* optionnel : centrer horizontalement */
+
+
+}
+
+
+h1 {
+    grid-column: 2;
     margin-bottom: 30px;
     font-size: 3em;
     color: white;
@@ -28,7 +54,7 @@ h1 {
 }
 
 h2 {
-    grid-column: 2;
+    grid-column: 3;
     margin-bottom: 20px;
     font-family: 'Angkor', sans-serif; 
     color: white;
@@ -36,9 +62,15 @@ h2 {
     background-color: rgb(187, 218, 245);
 }
 
+h3 {
+    font-family: 'Angkor', sans-serif; 
+    color: #333;
+    margin-bottom: 10px;
+}
+
 #menu{
     grid-row: 1;
-    grid-column: 2;
+    grid-column: 3;
     margin : auto;
     display: flex;
     justify-content: center;
@@ -58,8 +90,35 @@ button {
     width: 100px;
 }
 
+button:hover {
+    background-color: rgb(187, 218, 245);
+}
+
+#valider {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    margin-right: 10px;
+    margin-left: 10px;
+
+    height: 45px;
+    width: 100px;
+
+}
+
+#codeInput {
+    width: 30%;
+    padding: 8px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border: 2px solid #333;
+    border-radius: 5px;
+    font-size: 1em;
+    height: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
 .inventaire {
-    grid-column: 2;
+    grid-column: 3;
     grid-row: 2;
     margin-top: 0px;
     margin-left: 10px;
@@ -93,7 +152,7 @@ button {
 }
 
 #map { 
-    grid-column: 1;
+    grid-column: 1 / span 2;
     height: 70vh;
     border-radius: 25px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
