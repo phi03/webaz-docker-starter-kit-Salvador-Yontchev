@@ -95,6 +95,13 @@ Vue.createApp({
         // Ajout d'un marker sur la carte
         ajouterMarker(obj) {
 
+                if (obj.leafletMarker) {
+                    if (!this.map.hasLayer(obj.leafletMarker)) {
+                        obj.leafletMarker.addTo(this.map);
+                    }
+                    return;
+                }
+
             let geo = JSON.parse(obj.geom);
             console.log(obj);
             let marker = L.marker([geo.coordinates[1], geo.coordinates[0]], {
@@ -158,10 +165,15 @@ Vue.createApp({
             {
                 marker.addTo(this.map);
             } 
-            else 
+            else if (this.inventaire.find(o => o.id === obj.id)) {
+                marker.remove(this.map)
+            }
+            else
             {
                 this.objetsCarte.push(obj);  // sinon on le stocke pour le zoom
             }
+
+
         },
 
         // Ajout d'un objet à l'inventaire
@@ -191,8 +203,11 @@ Vue.createApp({
         //Affichage des objets de la carte selon leur niveau de Zoom
         majObjetsZoom() {
 
+            if (!this.map) return;
+
             let  zoomActuel = this.map.getZoom();
             console.log("Zoom actuel :", zoomActuel);
+
             
             // Affichage des objet de façon dynamique en fonction du zoom
             fetch(`/objets?zoom=${zoomActuel}`)
@@ -200,10 +215,9 @@ Vue.createApp({
                 .then(data => {
                     data.forEach(obj => {
                         // Vérifie si l'objet n'est pas déjà sur la carte ou dans l'inventaire
-                        if (!this.objetsCarte.find(o => o.id === obj.id) && 
-                            !this.inventaire.find(o => o.id === obj.id)) {
-                            this.ajouterMarker(obj);  // ajoute le marker à la carte /  à objetsCarte
-                            
+                        if (!this.inventaire.some(o => o.id === obj.id) && 
+                                !this.objetsCarte.some(o => o.id === obj.id)) {
+                                this.ajouterMarker(obj);
                         }
                     });
                 });
@@ -215,7 +229,7 @@ Vue.createApp({
                     if (!marker) return;
 
                     if (zoomActuel >= obj.zoom_min) {
-                        if (!this.map.hasLayer(marker)) {
+                        if (!this.map.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id))) {
                             marker.addTo(this.map);
                         }
                     } else {
@@ -305,7 +319,7 @@ Vue.createApp({
 
     mounted() {
         // Création de la carte Leaflet
-        this.map = L.map('map').setView([48.8566, 2.3522], 10);
+        this.map = L.map('map').setView([2.50, 100.35], 4);
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,

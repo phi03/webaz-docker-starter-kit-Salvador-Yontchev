@@ -12,14 +12,6 @@ Flight::route('/jeu', function() {
     Flight::render('jeu');
 });
 
-Flight::route('/hall_of_fame', function() {
-    Flight::render('hall_of_fame');
-});
-
-Flight::route('/info', function() {
-    Flight::render('info');
-});
-
 Flight::route('/test-db', function () {
     $host = 'db';
     $port = 5432;
