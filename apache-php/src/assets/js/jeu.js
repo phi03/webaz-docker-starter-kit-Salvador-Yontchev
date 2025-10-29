@@ -56,6 +56,9 @@ Vue.createApp({
 
 
         terminerJeu() {
+
+            console.log('HELLO')
+
             this.jeuEnCours = false;
             clearInterval(this.timer_interval); // stop le timer
 
@@ -85,7 +88,8 @@ Vue.createApp({
                     let codeCorrect = data[0]['code'];
                     if(codeSaisi === codeCorrect) {
                         this.debloquer_code(obj);
-                        this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
+                        if(!obj.fin)
+                        {this.afficherMessage('Code correct ! Objet ouvert.​🔓​');}
                     } else {
                         this.afficherMessage('Code incorrect, retentez votre chance.🔒​');
                     }
@@ -280,7 +284,7 @@ Vue.createApp({
         },
 
         debloquer_code(obj) {
-
+            console.log(obj)
             this.map.removeLayer(obj.leafletMarker);
             obj.leafletMarker = null;
 
@@ -294,6 +298,11 @@ Vue.createApp({
                         this.ajouterMarker(obj_libere);
                     }
                 });
+            }
+
+            if (obj.fin){
+                console.log(obj)
+                this.terminerJeu()
             }
         },
 
