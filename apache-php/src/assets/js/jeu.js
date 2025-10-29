@@ -95,6 +95,9 @@ Vue.createApp({
         // Ajout d'un marker sur la carte
         ajouterMarker(obj) {
 
+            if (!this.map || !obj || !obj.geom) {return};
+
+
                 if (obj.leafletMarker) {
                     if (!this.map.hasLayer(obj.leafletMarker)) {
                         obj.leafletMarker.addTo(this.map);
@@ -163,13 +166,17 @@ Vue.createApp({
             // Si c’est un objet de départ, on l’ajoute à la carte
             if (obj.depart || obj.zoom_min === null) 
             {
+                console.log('HUUUUUUU')
                 marker.addTo(this.map);
             } 
             else if (this.inventaire.find(o => o.id === obj.id)) {
+                console.log('HEYYYY')
+                obj.leafletMarker = null,
                 marker.remove(this.map)
             }
             else
             {
+                console.log('ICIIIIIIIIIIII')
                 this.objetsCarte.push(obj);  // sinon on le stocke pour le zoom
             }
 
@@ -192,18 +199,18 @@ Vue.createApp({
                         }
 
                     // Retire le marker de la carte
-                    if (obj.leafletMarker)
+                    if (obj.leafletMarker && this.map.hasLayer(obj.leafletMarker)) 
                         {
                             this.map.removeLayer(obj.leafletMarker);
-                            obj.leafletMarker = null;
                         }
+                    obj.leafletMarker = null;
                 }
         },
 
         //Affichage des objets de la carte selon leur niveau de Zoom
         majObjetsZoom() {
 
-            if (!this.map) return;
+            if (!this.map){return};
 
             let  zoomActuel = this.map.getZoom();
             console.log("Zoom actuel :", zoomActuel);
@@ -226,7 +233,7 @@ Vue.createApp({
                 this.objetsCarte.forEach(obj => {
 
                     let marker = obj.leafletMarker;
-                    if (!marker) return;
+                    if (!marker || !this.map) return;
 
                     if (zoomActuel >= obj.zoom_min) {
                         if (!this.map.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id))) {
@@ -319,7 +326,20 @@ Vue.createApp({
 
     mounted() {
         // Création de la carte Leaflet
-        this.map = L.map('map').setView([2.50, 100.35], 4);
+        this.map = L.map('map', {
+            zoomAnimation: true, // animations autorisées
+        }).setView([1.045, 103.94], 9);
+
+        // Fix temporaire pour éviter les erreurs quand un marker n’a plus de map
+        this.map.on('zoomstart', () => {
+            // On empêche Leaflet d’essayer d’animer les markers supprimés
+            L.Marker.prototype._animateZoom = function (e) {
+                if (!this._map) return; // ✅ évite _map is null
+                const pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center).round();
+                this._setPos(pos);
+            };
+        });
+
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
             maxZoom: 19,
@@ -327,7 +347,15 @@ Vue.createApp({
         }).addTo(this.map);
 
         // Événement zoom
-        this.map.on('zoomend', () => this.majObjetsZoom());
+         
+        this.map.on('zoomend', () => {
+            this.majObjetsZoom();
+
+            // Restaure le comportement normal de Leaflet
+            delete L.Marker.prototype._animateZoom;
+        });
+
+
 
         // Fetch objets départ
         fetch('/objets')
