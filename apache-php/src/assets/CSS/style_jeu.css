@@ -68,6 +68,18 @@ h3 {
     margin-bottom: 10px;
 }
 
+#indice h3{
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+#code h3{
+    font-family: Arial, Helvetica, sans-serif;
+    color: #333;
+    margin-bottom: 10px;
+}
+
 #menu{
     grid-row: 1;
     grid-column: 3;
@@ -77,6 +89,16 @@ h3 {
     gap: 15px;
     font-family: 'IM Fell English', serif; 
 }
+
+#btn-menu{
+    margin-right: 30px;
+    margin-left: 30px;
+}
+
+#btn-triche{
+    margin-right: 30px;
+}
+
 
 button {
     background-color: white;
@@ -97,12 +119,16 @@ button:hover {
 #valider {
     margin-top: 10px;
     margin-bottom: 10px;
-    margin-right: 10px;
-    margin-left: 10px;
+    margin-left: 15px;
 
     height: 45px;
-    width: 100px;
+    width: 50%;
 
+}
+
+#indiceBtn{
+    height: 45px;
+    width: 100%;
 }
 
 #codeInput {
@@ -185,6 +211,80 @@ button:hover {
     width: 150px;
 }
 
+.intro-bandeau {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(10, 20, 40, 0.9);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: fondu 1s ease-in-out;
+}
+
+.intro-bandeau h2{
+    text-align: center;
+    padding-left: 10px;
+    padding-right: 10px;
+    background-color: lightblue;
+    border-radius: 20px;
+}
+
+#pfin p{
+    text-align: center;
+}
+
+.intro-bandeau p{
+    text-align: justify;
+    padding-left: 30px;
+    padding-right: 30px;
+    border-radius: 20px;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: medium;
+    font-weight: bold;
+
+}
+
+
+
+.intro-contenu {
+  text-align: center;
+  max-width: 600px;
+  padding: 30px;
+  border-radius: 20px;
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+}
+
+.intro-contenu button {
+  margin-top: 20px;
+  background: white;
+  color: black;
+  border: none;
+  width:auto;
+  padding: 10px 20px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.intro-contenu button:hover {
+  background: lightblue;
+}
+
+@keyframes fondu {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes disparait {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
 
 #map { 
     grid-column: 1 / span 2;

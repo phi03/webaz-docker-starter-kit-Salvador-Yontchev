@@ -26,10 +26,20 @@
 
         <div id="menu">
 
-            <button @click="demarrerJeu">Start</button>
             
-            <button onclick="window.location.href='/'">Menu</button>
+            
+            <button id ="btn-menu" onclick="window.location.href='/'">Menu</button>
             <button id="btn-triche" class="btn-menu">Triche</button>
+        </div>
+
+        <div v-if="afficherIntro" class="intro-bandeau">
+            <div class="intro-contenu">
+                <h2 v-html="pagesIntro[etapeIntro].titre"></h2>
+                <p v-html="pagesIntro[etapeIntro].texte"></p>
+                <button @click="suivantIntro">
+                {{ pagesIntro[etapeIntro].bouton }}
+                </button>
+            </div>
         </div>
 
         <div id="map"></div>
@@ -41,7 +51,7 @@
                 <img 
                 :src="objet.img" 
                 :alt="objet.nom" 
-                :title="objet.nom" 
+                :title="objet.indice" 
                 class="objet-inventaire"
                 :class="{ 'selected': objet === objet_selectionne }"
                 @click="selectionner_Objet(objet)" />
