@@ -338,7 +338,7 @@ Vue.createApp({
                     let marker = obj.leafletMarker;
                     if (!marker || !this.map) {return};
 
-                    if (zoomActuel >= obj.zoom_min-1) 
+                    if (zoomActuel+1 >= obj.zoom_min) 
                     {
                         if (!this.map.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
                         {
