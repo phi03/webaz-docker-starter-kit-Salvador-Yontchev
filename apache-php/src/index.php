@@ -69,8 +69,8 @@ Flight::route('POST /scores', function () {
     $link = pg_connect("host=$host port=$port dbname=$dbname user=$user password=$pass");
 
     $pseudo = $_POST['pseudo'];
-    $score = $_POST['score'];
-    $sql = "INSERT INTO scores (pseudo, score) VALUES ('$pseudo', $score)";
+    $temps = $_POST['temps'];
+    $sql = "INSERT INTO scores (pseudo, temps) VALUES ('$pseudo', $temps)";
     pg_query($link, $sql);
     Flight::json(['status' => 'success']);
 });

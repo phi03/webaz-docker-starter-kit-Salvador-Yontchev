@@ -140,7 +140,7 @@ Vue.createApp({
             {
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ pseudo: pseudo, tempsRestant: this.tempsRestant })
+                body: JSON.stringify({ pseudo: pseudo, temps: this.tempsRestant })
             })
             .then(res => res.json())
             .then(data => 
@@ -159,14 +159,17 @@ Vue.createApp({
                     if(codeSaisi === codeCorrect) 
                     {
                         this.debloquer_code(obj);
-                        if(!obj.fin)
+                        this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
+                        setTimeout(() => 
                         {
-                            this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
-                        }
-                        else
-                        {
-                            this.terminerJeu
-                        }
+                            if(obj.fin==='t')
+                            {
+                                console.log("COUCOU")
+                                this.terminerJeu()
+                            }
+                        }, 2000);
+                        
+                        
                     } 
                     else 
                     {
