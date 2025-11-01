@@ -62,13 +62,13 @@ VALUES
 ('Amulette du navigateur', '../assets/img/amulette.png', FALSE, FALSE, 'récupérable',
  'Trouvé dans le coffre à carburant. Il me servira sans doute plus tard...',
  NULL, NULL, NULL,
- ST_SetSRID(ST_MakePoint(42.73, 13.0), 4326), NULL),
+ ST_SetSRID(ST_MakePoint(43.25, 13.27), 4326), NULL),
 
 ('Panneau du détroit de Bab-El-Mandeb', '../assets/img/panneau.png', FALSE, FALSE, 'indication',
  'Entre le Yémen et Djibouti, ce détroit est vital pour l’or noir. Les guerres et les tempêtes menacent les routes de la mer Rouge.  
  <h4>→ Suis le courant vers le nord, vers le canal de Suez.</h4>',
  NULL, NULL, NULL,
- ST_SetSRID(ST_MakePoint(43.50, 12.62), 4326), 10),
+ ST_SetSRID(ST_MakePoint(42.73, 13.0), 4326), 10),
 
 -- CANAL DE SUEZ
 
