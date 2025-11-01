@@ -17,7 +17,7 @@ Vue.createApp({
         <p>Ohé du bateau ! Bien le bonjour mousaillons !
         Êtes-vous prêts à relever le défi ? Avant de vous lancer n'hésitez pas à jeter un oeil aux indications de jeu... Parole de Pirate ! </p>
 
-        <h2> Instructions du jeu : </h2>
+        <h2> Indications de jeu : </h2>
         <ul>
             <li>Retrouvez le trésor du Pirate S.G le plus rapidement possible ! </li>
             <li>Explorez les différents objets interactifs présents sur la carte.</li>
@@ -30,7 +30,7 @@ Vue.createApp({
         </ul>
 
         <h2> Pourquoi ce jeu ? </h2>
-        <p>Ce jeu d'escape game en ligne est conçu pour stimuler votre esprit, encourager la résolution de problèmes et offrir une expérience immersive sur 
+        <p>Ce jeu d'escape game est conçu pour stimuler votre esprit, encourager la résolution de problèmes et offrir une expérience immersive sur 
         le thème du transport maritime. En relevant les défis proposés, vous aurez l'occasion de comprendre l'importance stratégique des grandes routes maritimes à travers le monde,
         dans un contexte à fortes pressions géopolitiques mais aussi environnementales. Alors laissez vous transporter dans un univers d'aventure et de mystère.
         </p>

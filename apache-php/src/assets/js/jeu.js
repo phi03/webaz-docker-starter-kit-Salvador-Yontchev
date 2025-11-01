@@ -14,8 +14,8 @@ Vue.createApp({
             messageInfo: '',
             
             jeuEnCours: false,
-            tempsTotal: 60,           //temps de jeu
-            tempsRestant: 60,
+            tempsTotal: 600,           //temps de jeu
+            tempsRestant: 600,         // compteur
             timer_interval: null,
 
             afficherIntro: true, //affichage intro
@@ -129,7 +129,7 @@ Vue.createApp({
             if (this.tempsRestant <= 0) 
             {
                 this.afficherMessage("🐟​Il n'y a plus de temps ! Vous avez perdu. 🐟​");
-                
+
                 return;
             }
 
@@ -338,7 +338,7 @@ Vue.createApp({
                     let marker = obj.leafletMarker;
                     if (!marker || !this.map) {return};
 
-                    if (zoomActuel >= obj.zoom_min) 
+                    if (zoomActuel >= obj.zoom_min-1) 
                     {
                         if (!this.map.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
                         {
@@ -407,8 +407,8 @@ Vue.createApp({
                         if (data.length > 0)                    // Vérifie si l'objet libéré existe
                         { 
                             let obj_libere = data[0];
-                            obj_libere.zoom = 10
                             this.ajouterMarker(obj_libere);
+                            obj_libere.zoom_min = 10            //MàJ de l'attribut de zoom pour le faire disparaitre au dézoom
                         }
                     });
             }
@@ -439,6 +439,7 @@ Vue.createApp({
                     {
                         let obj_libere = data[0];
                         this.ajouterMarker(obj_libere);
+                        obj_libere.zoom_min = 10
                     }
                 });
     
