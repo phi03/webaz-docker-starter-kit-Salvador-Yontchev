@@ -60,7 +60,7 @@ Flight::route('GET /objets', function () {
     Flight::json($results);
 });
 
-Flight::route('POST /score', function () {
+Flight::route('POST /scores', function () {
     $host = 'db';
     $port = 5432;
     $dbname = 'mydb';

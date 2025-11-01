@@ -71,6 +71,7 @@ Vue.createApp({
                 this.demarrerJeu()
             }
         },
+
         fermerIntro() 
         {
             this.afficherIntro = false;
@@ -128,13 +129,14 @@ Vue.createApp({
             if (this.tempsRestant <= 0) 
             {
                 this.afficherMessage("🐟​Il n'y a plus de temps ! Vous avez perdu. 🐟​");
-                return; // pas d'envoi de score
+                
+                return;
             }
 
             // Si le joueur a terminé avant la fin du temps
             let pseudo = prompt("Entrez votre pseudo pour le classement :");
             
-            fetch('/score', 
+            fetch('/scores', 
             {
                 method: 'POST',
                 headers: {'Content-Type':'application/json'},
@@ -157,10 +159,13 @@ Vue.createApp({
                     if(codeSaisi === codeCorrect) 
                     {
                         this.debloquer_code(obj);
-                        console.log(obj.fin)
                         if(!obj.fin)
                         {
                             this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
+                        }
+                        else
+                        {
+                            this.terminerJeu
                         }
                     } 
                     else 
@@ -182,7 +187,7 @@ Vue.createApp({
                 icon: L.icon(
                 {
                     iconUrl: obj.img,
-                    iconSize: [40, 40],
+                    iconSize: [80, 80],
                     iconAnchor: [20, 40],
                     popupAnchor: [0, -40]
                 })
@@ -311,7 +316,7 @@ Vue.createApp({
             console.log("Zoom actuel :", zoomActuel);
 
             
-            // Affichage des objet de façon dynamique en fonction du zoom
+            // Affichage des objet de façon dynamique en fonction du zoom  //////////////// telecharger niveau de zoom puis parcours pcq rame bcp
             fetch(`/objets?zoom=${zoomActuel}`)
                 .then(res => res.json())
                 .then(data => 
@@ -402,16 +407,13 @@ Vue.createApp({
                         if (data.length > 0)                    // Vérifie si l'objet libéré existe
                         { 
                             let obj_libere = data[0];
+                            obj_libere.zoom = 10
                             this.ajouterMarker(obj_libere);
                         }
                     });
             }
 
-            if (obj.fin)
-            {
-                console.log(obj)
-                this.terminerJeu()
-            }
+            
         },
 
 
