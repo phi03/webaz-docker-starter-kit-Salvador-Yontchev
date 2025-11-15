@@ -10,6 +10,7 @@ Vue.createApp({
             code : '',                 // Code entré par l'utilisateur
             
             messageTexte: '',
+            afficherPrompt: false,
 
             messageInfo: '',
             
@@ -76,7 +77,6 @@ Vue.createApp({
         {
             this.messageTexte = texte;
         },
-
         fermerMessage() 
         {
             this.messageTexte = '';
@@ -116,8 +116,6 @@ Vue.createApp({
         terminerJeu() 
         {
 
-            console.log('HELLO')
-
             this.jeuEnCours = false;
             clearInterval(this.timer_interval); // stop le timer
 
@@ -129,8 +127,18 @@ Vue.createApp({
             }
 
             // Si le joueur a terminé avant la fin du temps
-            let pseudo = prompt("Entrez votre pseudo pour le classement :");
-            
+            this.afficherPrompt = true;
+        },
+
+        submit_score(){
+            let pseudo = this.messagePrompt.trim();
+            if(pseudo === '') 
+            {
+                alert("Veuillez entrer un pseudo valide.");
+                return;
+            }
+            this.afficherPrompt = false;
+
             let donnees = new FormData();
             donnees.append('pseudo', pseudo);
             donnees.append('temps', this.tempsRestant);
@@ -140,11 +148,7 @@ Vue.createApp({
                 method: 'POST',
                 body: donnees
             })
-            .then(res => res.json())
-            .then(data => 
-            {
-                this.afficherMessage("Bravo ! Vous avez réussi.🏆​");
-            });
+            window.location.href = '/';
         },
 
         submit(obj, codeSaisi) 
@@ -156,11 +160,14 @@ Vue.createApp({
                     let codeCorrect = data[0]['code'];
                     if(codeSaisi === codeCorrect) 
                     {
-                        this.debloquer_code(obj);
-                        this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
                         if(obj.fin == 't')
                         {
                             this.terminerJeu()
+                        }
+                        else
+                        {
+                            this.debloquer_code(obj);
+                            this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
                         }
                     } 
                     else 
@@ -187,9 +194,6 @@ Vue.createApp({
                     popupAnchor: [0, -40]
                 })
             });
-
-            // Ajout de l'atribut referencant le marker Leaflet à l'objet
-            obj.leafletMarker = marker;
 
             // Faire une disjoinction de cas sur le type de l'objet
             marker.on('click', () => {
@@ -223,7 +227,7 @@ Vue.createApp({
                                                         <button id ="valider" type="submit">Valider</button>
                                                     </form>
                                                     <button id ="indiceBtn">Indice</button>
-                                                </div>`).openPopup();
+                                                </div>`,{minWidth: 250}).openPopup();
 
                                                 //Obligation d'utiliser du js natif pour gérer le formulaire dans le popup Leaflet ajouté dynamiquement car sinon Vue.js ne le reconnait pas                                                                                  
                                                 let form = document.getElementById("codeForm");                 //Récupère le formulaire
@@ -256,25 +260,27 @@ Vue.createApp({
                                     }); 
 
             // Si c’est un objet de départ, on l’ajoute à la carte
-            marker.addTo(this.map);
+            marker.addTo(this.markersGroup);
+            // Ajout de l'atribut referencant le marker Leaflet à l'objet
+            obj.leafletMarker = marker;
             this.objetsDebloques.push(obj);
-
+            console.log(marker);
         },
 
         // Ajout d'un objet à l'inventaire
         ajouterObjetInventaire(obj) 
         {
-
             // Vérifie si l'objet n'est pas déjà dans l'inventaire
             if (!this.inventaire.find(o => o.id === obj.id)) 
             {
                 this.inventaire.push(obj);
 
                 // Retire le marker de la carte
-                if (obj.leafletMarker && this.map.hasLayer(obj.leafletMarker)) 
+                if (obj.leafletMarker && this.markersGroup.hasLayer(obj.leafletMarker)) 
                 {
-                    this.map.removeLayer(obj.leafletMarker);
+                    this.markersGroup.removeLayer(obj.leafletMarker);
                 }
+                
                 obj.leafletMarker = null;
             }
         },
@@ -283,7 +289,9 @@ Vue.createApp({
         majObjetsZoom() 
         {
 
-            if (!this.map){return};
+            if (!this.map){
+                console.log("La carte n'est pas encore initialisée.");
+                return};
 
             let zoomActuel = this.map.getZoom();
             console.log("Zoom actuel :", zoomActuel);
@@ -291,22 +299,24 @@ Vue.createApp({
             // Mise à jour de l'affichage des markers existants en fonction du zoom
             this.objetsDebloques.forEach(obj => 
             {
-
                 let marker = obj.leafletMarker;
-                if (!marker || !this.map) {return};
-
+                
+                if (marker == null) {
+                    return;
+                }
+                
                 if (zoomActuel >= obj.zoom_min) 
                 {
-                    if (!this.map.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
+                    if (!this.markersGroup.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
                     {
-                        marker.addTo(this.map);
+                        marker.addTo(this.markersGroup);
                     }
                 } 
                 else 
                 {
-                    if (this.map.hasLayer(marker)) 
+                    if (this.markersGroup.hasLayer(marker)) 
                     {
-                        marker.remove();  
+                        this.markersGroup.removeLayer(marker);
                     }
                 }
             });
@@ -315,13 +325,7 @@ Vue.createApp({
         // Affichage du code
         f_code(obj) 
         {
-            fetch(`/objets?id=${obj.id}`)
-                .then(res => res.json())
-                .then(data => 
-                {
-                    obj.leafletMarker.bindPopup(`<div id="code"><h3> ${data[0]['code']}</h3></div>`).openPopup();
-                    
-                });
+            obj.leafletMarker.bindPopup(`<div id="code"><h3> ${obj.code}</h3></div>`).openPopup();
         },
 
         // Affichage de l'indice pour un objet bloqué par un autre objet
@@ -353,7 +357,7 @@ Vue.createApp({
         debloquer_code(obj)
         {
             console.log(obj.fin)
-            this.map.removeLayer(obj.leafletMarker);
+            this.markersGroup.removeLayer(obj.leafletMarker);
             obj.leafletMarker = null;
 
             if (obj.objet_libere !== null) 
@@ -378,7 +382,7 @@ Vue.createApp({
         debloquer(obj) 
         {
 
-            this.map.removeLayer(obj.leafletMarker);
+            this.markersGroup.removeLayer(obj.leafletMarker);
             obj.leafletMarker = null;
 
             // Retirer l'objet utilisé de l'inventaire
@@ -411,7 +415,9 @@ Vue.createApp({
             {
                 zoomAnimation: false, // animations autorisées lors du zoom
             }).setView([1.045, 103.94], 9);
-
+            
+        this.markersGroup = L.layerGroup().addTo(this.map);
+        /*
         // Fix temporaire pour éviter les erreurs quand un marker n’a plus de map évite l'erreur _map is null cannot access property _latlonMarker...
         this.map.on('zoomstart', () => 
         {
@@ -422,8 +428,7 @@ Vue.createApp({
                 const pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center).round();
                 this._setPos(pos);
             };
-        });
-
+        });*/
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', 
         {
@@ -439,7 +444,7 @@ Vue.createApp({
             this.majObjetsZoom();
 
             // Restaure le comportement normal de Leaflet
-            delete L.Marker.prototype._animateZoom;
+            //delete L.Marker.prototype._animateZoom;
         });
 
         // Fetch des objets départ

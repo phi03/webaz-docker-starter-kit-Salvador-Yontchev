@@ -44,7 +44,7 @@
 
             <div id="message" v-if="messagefame" class="message-popup">
                 <div id="fame">
-                    <h1>Hall of Fame</h1>
+                    <h1 id="title_fame">Hall of Fame</h1>
                     <ol>
                         <li v-for="score in topScores" :key="score.id">
                             {{ score.pseudo }} - {{ score.temps }} s

@@ -76,8 +76,14 @@
                 </div>
 
                 <div id="message" v-if="messageTexte" class="message-popup">
-                    {{ messageTexte }}
+                    <p>{{ messageTexte }}</p>
                     <button @click="fermerMessage">OK</button>
+                </div>
+
+                <form id="message_prompt" v-if="afficherPrompt" class="message-popup" @submit.prevent="submit_score" @keyup.13="submit_score">
+                    <p><label for="pseudo">Bravo vous avez gagné 🏆</p> <p>Veuillez entrez votre pseudo pour sauvegarder votre score :</label><p>
+                    <p><input type="text" id="pseudo" class="input-pseudo" v-model="messagePrompt"/></p>
+                    <button>Valider</button>
                 </div>
             </div>
 
