@@ -6,6 +6,8 @@ Vue.createApp({
             inventaire : [],           // Liste des objets dans l'inventaire
             objetsDebloques: [],       // Liste des objets actuellement debloques
             map: null,                 // Instance de la carte Leaflet
+            cheatTile: null,           // couche triche
+            markersGroup: null,        // Groupe de markers sur la carte
             objet_selectionne: null,   // Objet actuellement sélectionné dans l'inventaire
             code : '',                 // Code entré par l'utilisateur
             
@@ -18,6 +20,8 @@ Vue.createApp({
             tempsTotal: 600,           //temps de jeu
             tempsRestant: 600,         // compteur
             timer_interval: null,
+            tricheActive: false,    // affichage couche triche
+            
 
             afficherIntro: false, //affichage intro
             etapeIntro: 0, // index de la page actuelle
@@ -166,7 +170,7 @@ Vue.createApp({
                         }
                         else
                         {
-                            this.debloquer_code(obj);
+                            this.debloquer(obj);
                             this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
                         }
                     } 
@@ -209,7 +213,7 @@ Vue.createApp({
                                         {
                                             if (this.objet_selectionne && this.objet_selectionne.id === obj.objet_bloquant) 
                                             {
-                                                this.debloquer(obj);
+                                                this.debloquer(obj, true);
                                             }
                                             else 
                                             {
@@ -259,6 +263,7 @@ Vue.createApp({
                                         
                                     }); 
 
+            
             // Si c’est un objet de départ, on l’ajoute à la carte
             marker.addTo(this.markersGroup);
             // Ajout de l'atribut referencant le marker Leaflet à l'objet
@@ -292,7 +297,7 @@ Vue.createApp({
             if (!this.map){
                 console.log("La carte n'est pas encore initialisée.");
                 return};
-
+            
             let zoomActuel = this.map.getZoom();
             console.log("Zoom actuel :", zoomActuel);
 
@@ -304,7 +309,7 @@ Vue.createApp({
                 if (marker == null) {
                     return;
                 }
-                
+                console.log(marker.getPopup());
                 if (zoomActuel >= obj.zoom_min) 
                 {
                     if (!this.markersGroup.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
@@ -354,41 +359,20 @@ Vue.createApp({
             }
         },
 
-        debloquer_code(obj)
-        {
-            console.log(obj.fin)
-            this.markersGroup.removeLayer(obj.leafletMarker);
-            obj.leafletMarker = null;
-
-            if (obj.objet_libere !== null) 
-            {
-                fetch(`/objets?id=${obj.objet_libere}`)
-                    .then(res => res.json())
-                    .then(data => 
-                    {
-                        if (data.length > 0)                    // Vérifie si l'objet libéré existe
-                        { 
-                            let obj_libere = data[0];
-                            obj_libere.zoom_min = 10            //MàJ de l'attribut de zoom pour le faire disparaitre au dézoom
-                            this.ajouterMarker(obj_libere);
-                        }
-                    });
-            }
-
-            
-        },
-
         // Débloquer un objet bloqué par un autre objet
-        debloquer(obj) 
+        debloquer(obj, suppr_inventaire = false) 
         {
-
+            // Retirer le marker de la carte
+            obj.leafletMarker.closePopup();
+            obj.leafletMarker.unbindPopup();
             this.markersGroup.removeLayer(obj.leafletMarker);
             obj.leafletMarker = null;
 
             // Retirer l'objet utilisé de l'inventaire
-            this.inventaire = this.inventaire.filter(o => o.id !== this.objet_selectionne.id);
-
-            this.objet_selectionne = null;
+            if (suppr_inventaire) {
+                this.inventaire = this.inventaire.filter(o => o.id !== this.objet_selectionne.id);
+                this.objet_selectionne = null;
+            }
 
             // Ajouter l'objet libéré à la carte
             console.log(obj);
@@ -399,13 +383,36 @@ Vue.createApp({
                     if (data.length > 0) 
                     {
                         let obj_libere = data[0];
-                        obj_libere.zoom_min = 10;
                         this.ajouterMarker(obj_libere);
                     }
                 });
     
-        }
+        },
 
+        afficherTriche(){
+            this.tricheActive = !this.tricheActive;
+
+            // Activer la couche de triche
+            if(this.tricheActive) {
+                this.afficherMessage("Mode triche activé : tous les objets sont visibles sur la carte.");
+                let urlCoucheTriche = 'http://localhost:8080/geoserver/Projet_Web/wms';
+                this.cheatTile = L.tileLayer.wms(urlCoucheTriche,
+                    {
+                        layers : 'Projet_Web:objets',
+                        format: 'image/png',
+                        transparent: true,
+                    });
+                this.cheatTile.addTo(this.map);
+                } 
+            // Désactiver la couche de triche
+            else {
+                this.afficherMessage("Mode triche désactivé.");
+                if(this.cheatTile) {
+                    this.map.removeLayer(this.cheatTile);
+                    this.cheatTile = null;
+                }
+            }
+        },
     },
 
     mounted() 
@@ -413,7 +420,7 @@ Vue.createApp({
         // Création de la carte Leaflet
         this.map = L.map('map', 
             {
-                zoomAnimation: false, // animations autorisées lors du zoom
+                zoomAnimation: true, // animations autorisées lors du zoom
             }).setView([1.045, 103.94], 9);
             
         this.markersGroup = L.layerGroup().addTo(this.map);
@@ -447,11 +454,11 @@ Vue.createApp({
             //delete L.Marker.prototype._animateZoom;
         });
 
-        // Fetch des objets départ
+        // Récupère tous les objets de départ
         fetch('/objets')
             .then(res => res.json())
             .then(data => data.forEach(obj => this.ajouterMarker(obj)));
-        console.log(this.objetsDebloques);
+
         /*
         setTimeout(() => 
         {

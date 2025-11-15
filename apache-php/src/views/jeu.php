@@ -45,7 +45,7 @@
 
                 <div id="menu">
                     <button id ="btn-menu" onclick="window.location.href='/'">Menu</button>
-                    <button id="btn-triche" class="btn-menu">Triche</button>
+                    <button id="btn-triche" class="btn-menu" @click="afficherTriche">Triche</button>
                 </div>
 
                 <div v-if="afficherIntro" class="intro-bandeau">
