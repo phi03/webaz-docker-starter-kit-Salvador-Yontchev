@@ -4,7 +4,7 @@ Vue.createApp({
     {
         return {
             inventaire : [],           // Liste des objets dans l'inventaire
-            objetsCarte: [],           // Liste des objets actuellement sur la carte
+            objetsDebloques: [],       // Liste des objets actuellement debloques
             map: null,                 // Instance de la carte Leaflet
             objet_selectionne: null,   // Objet actuellement sélectionné dans l'inventaire
             code : '',                 // Code entré par l'utilisateur
@@ -18,7 +18,7 @@ Vue.createApp({
             tempsRestant: 600,         // compteur
             timer_interval: null,
 
-            afficherIntro: true, //affichage intro
+            afficherIntro: false, //affichage intro
             etapeIntro: 0, // index de la page actuelle
             pagesIntro: [
             {
@@ -70,11 +70,6 @@ Vue.createApp({
                 this.afficherIntro = false; // quitte l’intro
                 this.demarrerJeu()
             }
-        },
-
-        fermerIntro() 
-        {
-            this.afficherIntro = false;
         },
 
         afficherMessage(texte) 
@@ -136,11 +131,14 @@ Vue.createApp({
             // Si le joueur a terminé avant la fin du temps
             let pseudo = prompt("Entrez votre pseudo pour le classement :");
             
+            let donnees = new FormData();
+            donnees.append('pseudo', pseudo);
+            donnees.append('temps', this.tempsRestant);
+
             fetch('/scores', 
             {
                 method: 'POST',
-                headers: {'Content-Type':'application/json'},
-                body: JSON.stringify({ pseudo: pseudo, temps: this.tempsRestant })
+                body: donnees
             })
             .then(res => res.json())
             .then(data => 
@@ -160,16 +158,10 @@ Vue.createApp({
                     {
                         this.debloquer_code(obj);
                         this.afficherMessage('Code correct ! Objet ouvert.​🔓​');
-                        setTimeout(() => 
+                        if(obj.fin == 't')
                         {
-                            if(obj.fin==='t')
-                            {
-                                console.log("COUCOU")
-                                this.terminerJeu()
-                            }
-                        }, 2000);
-                        
-                        
+                            this.terminerJeu()
+                        }
                     } 
                     else 
                     {
@@ -200,22 +192,18 @@ Vue.createApp({
             obj.leafletMarker = marker;
 
             // Faire une disjoinction de cas sur le type de l'objet
-
             marker.on('click', () => {
                                         if(obj.type_objet === "récupérable") 
                                         {
                                             this.ajouterObjetInventaire(obj)
                                         }
-
                                         else if(obj.type_objet === "code")
                                         {
                                             this.f_code(obj)
                                         }
-
                                         else if(obj.type_objet === "bloqué_par_objet")
                                         {
-                                            
-                                            if (this.objet_selectionne && this.objet_selectionne.nom === obj.objet_bloquant) 
+                                            if (this.objet_selectionne && this.objet_selectionne.id === obj.objet_bloquant) 
                                             {
                                                 this.debloquer(obj);
                                             }
@@ -234,9 +222,10 @@ Vue.createApp({
 
                                                         <button id ="valider" type="submit">Valider</button>
                                                     </form>
-                                                    <button id ="indiceBtn" type="indice">Indice</button>
+                                                    <button id ="indiceBtn">Indice</button>
                                                 </div>`).openPopup();
-                                                                                                                //POUR MOI                   
+
+                                                //Obligation d'utiliser du js natif pour gérer le formulaire dans le popup Leaflet ajouté dynamiquement car sinon Vue.js ne le reconnait pas                                                                                  
                                                 let form = document.getElementById("codeForm");                 //Récupère le formulaire
                                                 let indiceBtn = document.getElementById("indiceBtn");  
 
@@ -246,7 +235,7 @@ Vue.createApp({
                                                     let codeValue = document.getElementById("codeInput").value;  //Récupère la valeur entrée
                                                     this.submit(obj, codeValue);                                 //Appelle la méthode submit avec l'objet et le code entré
                                                 });
-
+                                                
                                                 indiceBtn.addEventListener("click", () => 
                                                 {
                                                     this.afficherIndice(obj);
@@ -267,20 +256,8 @@ Vue.createApp({
                                     }); 
 
             // Si c’est un objet de départ, on l’ajoute à la carte
-            if (obj.depart || obj.zoom_min === null) 
-            {
-                marker.addTo(this.map);
-            } 
-            else if (this.inventaire.find(o => o.id === obj.id)) 
-            {
-                obj.leafletMarker = null,
-                marker.remove(this.map)
-            }
-            else
-            {
-                this.objetsCarte.push(obj);  // sinon on le stocke pour le zoom
-            }
-
+            marker.addTo(this.map);
+            this.objetsDebloques.push(obj);
 
         },
 
@@ -290,23 +267,16 @@ Vue.createApp({
 
             // Vérifie si l'objet n'est pas déjà dans l'inventaire
             if (!this.inventaire.find(o => o.id === obj.id)) 
+            {
+                this.inventaire.push(obj);
+
+                // Retire le marker de la carte
+                if (obj.leafletMarker && this.map.hasLayer(obj.leafletMarker)) 
                 {
-                    this.inventaire.push(obj);
-
-                    // Retire l'objet de objetsCarte pour ne plus gérer son affichage via zoom
-                    let index = this.objetsCarte.findIndex(o => o.id === obj.id);
-                    if (index !== -1)
-                        {
-                            this.objetsCarte.splice(index, 1);
-                        }
-
-                    // Retire le marker de la carte
-                    if (obj.leafletMarker && this.map.hasLayer(obj.leafletMarker)) 
-                        {
-                            this.map.removeLayer(obj.leafletMarker);
-                        }
-                    obj.leafletMarker = null;
+                    this.map.removeLayer(obj.leafletMarker);
                 }
+                obj.leafletMarker = null;
+            }
         },
 
         //Affichage des objets de la carte selon leur niveau de Zoom
@@ -315,47 +285,31 @@ Vue.createApp({
 
             if (!this.map){return};
 
-            let  zoomActuel = this.map.getZoom();
+            let zoomActuel = this.map.getZoom();
             console.log("Zoom actuel :", zoomActuel);
 
-            
-            // Affichage des objet de façon dynamique en fonction du zoom  //////////////// telecharger niveau de zoom puis parcours pcq rame bcp
-            fetch(`/objets?zoom=${zoomActuel}`)
-                .then(res => res.json())
-                .then(data => 
+            // Mise à jour de l'affichage des markers existants en fonction du zoom
+            this.objetsDebloques.forEach(obj => 
+            {
+
+                let marker = obj.leafletMarker;
+                if (!marker || !this.map) {return};
+
+                if (zoomActuel >= obj.zoom_min) 
                 {
-                    data.forEach(obj =>
+                    if (!this.map.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
                     {
-                        // Vérifie si l'objet n'est pas déjà sur la carte ou dans l'inventaire
-                        if (!this.inventaire.some(o => o.id === obj.id) && !this.objetsCarte.some(o => o.id === obj.id)) 
-                            {
-                                this.ajouterMarker(obj);
-                            }
-                    });
-                });
-
-                // Mise à jour de l'affichage des markers existants en fonction du zoom
-                this.objetsCarte.forEach(obj => 
-                {
-
-                    let marker = obj.leafletMarker;
-                    if (!marker || !this.map) {return};
-
-                    if (zoomActuel+1 >= obj.zoom_min) 
-                    {
-                        if (!this.map.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
-                        {
-                            marker.addTo(this.map);
-                        }
-                    } 
-                    else 
-                    {
-                        if (this.map.hasLayer(marker)) 
-                        {
-                            marker.remove();  
-                        }
+                        marker.addTo(this.map);
                     }
-                });
+                } 
+                else 
+                {
+                    if (this.map.hasLayer(marker)) 
+                    {
+                        marker.remove();  
+                    }
+                }
+            });
         },
 
         // Affichage du code
@@ -373,6 +327,7 @@ Vue.createApp({
         // Affichage de l'indice pour un objet bloqué par un autre objet
         afficherIndice(obj) 
         {
+            console.log("Affichage indice pour l'objet :", obj);
              fetch(`/objets?id=${obj.id}`)
                 .then(res => res.json())
                 .then(data => 
@@ -410,15 +365,14 @@ Vue.createApp({
                         if (data.length > 0)                    // Vérifie si l'objet libéré existe
                         { 
                             let obj_libere = data[0];
-                            this.ajouterMarker(obj_libere);
                             obj_libere.zoom_min = 10            //MàJ de l'attribut de zoom pour le faire disparaitre au dézoom
+                            this.ajouterMarker(obj_libere);
                         }
                     });
             }
 
             
         },
-
 
         // Débloquer un objet bloqué par un autre objet
         debloquer(obj) 
@@ -441,8 +395,8 @@ Vue.createApp({
                     if (data.length > 0) 
                     {
                         let obj_libere = data[0];
+                        obj_libere.zoom_min = 10;
                         this.ajouterMarker(obj_libere);
-                        obj_libere.zoom_min = 10
                     }
                 });
     
@@ -455,7 +409,7 @@ Vue.createApp({
         // Création de la carte Leaflet
         this.map = L.map('map', 
             {
-                zoomAnimation: true, // animations autorisées lors du zoom
+                zoomAnimation: false, // animations autorisées lors du zoom
             }).setView([1.045, 103.94], 9);
 
         // Fix temporaire pour éviter les erreurs quand un marker n’a plus de map évite l'erreur _map is null cannot access property _latlonMarker...
@@ -473,6 +427,7 @@ Vue.createApp({
 
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', 
         {
+            noWrap: true,
             maxZoom: 19,
             attribution: '&copy; OpenStreetMap'
         }).addTo(this.map);
@@ -491,11 +446,12 @@ Vue.createApp({
         fetch('/objets')
             .then(res => res.json())
             .then(data => data.forEach(obj => this.ajouterMarker(obj)));
-
+        console.log(this.objetsDebloques);
+        /*
         setTimeout(() => 
         {
             this.afficherIntro = true;
-        }, 2000);
+        }, 2000);*/
 
     }   
 }).mount('#app');
