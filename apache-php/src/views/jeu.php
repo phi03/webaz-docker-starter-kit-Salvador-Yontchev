@@ -37,8 +37,8 @@
             <div id ="app">
 
                 <div id="timer" class="timer">
-                    <span>Temps restant :</span>
-                    <span>{{ formatTemps(tempsRestant) }}</span>
+                    <p>Temps restant :</br>
+                    {{ formatTemps(tempsRestant) }}</p>
                 </div>
 
                 <h1>Nom du jeu</h1>
