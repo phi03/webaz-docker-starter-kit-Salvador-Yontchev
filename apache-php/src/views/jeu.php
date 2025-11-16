@@ -77,7 +77,7 @@
 
                 <div id="message" v-if="messageTexte" class="message-popup">
                     <p>{{ messageTexte }}</p>
-                    <button @click="fermerMessage">OK</button>
+                    <button @click="fermerMessage" v-bind:onclick="redirectionMessage">OK</button>
                 </div>
 
                 <form id="message_prompt" v-if="afficherPrompt" class="message-popup" @submit.prevent="submit_score" @keyup.13="submit_score">

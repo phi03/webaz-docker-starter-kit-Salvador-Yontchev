@@ -1,30 +1,29 @@
-
 Vue.createApp({
     data() 
     {
         return {
             inventaire : [],           // Liste des objets dans l'inventaire
-            objetsDebloques: [],       // Liste des objets actuellement debloques
+            objetsDebloques: [],       // Liste des objets actuellement débloqués
+
             map: null,                 // Instance de la carte Leaflet
-            cheatTile: null,           // couche triche
-            markersGroup: null,        // Groupe de markers sur la carte
+            cheatTile: null,           // Couche de triche
+            markersGroup: null,        // Couche de markers sur la carte
             objet_selectionne: null,   // Objet actuellement sélectionné dans l'inventaire
             code : '',                 // Code entré par l'utilisateur
             
-            messageTexte: '',
-            afficherPrompt: false,
-
-            messageInfo: '',
+            messageTexte: '',         // Texte de la boîte de message
+            afficherPrompt: false,    // Indique si le prompt pour score final est affiché
+            messagePrompt: '',        // Texte entrée par l'utilisateur dans le prompt
+            redirectionMessage: '',   // Redirection après avoir fermé le message
             
-            jeuEnCours: false,
-            tempsTotal: 600,           //temps de jeu
-            tempsRestant: 600,         // compteur
-            timer_interval: null,
-            tricheActive: false,    // affichage couche triche
-            
+            jeuEnCours: false,         // Indique si le jeu est en cours
+            tempsTotal: 600,           // Temps de jeu maximum en secondes
+            tempsRestant: null,        // Temps restant en secondes
+            timer_interval: null,      // Référence à l'intervalle du timer
+            tricheActive: false,       // Affichage couche de triche
 
-            afficherIntro: false, //affichage intro
-            etapeIntro: 0, // index de la page actuelle
+            afficherIntro: true,      // Affichage intro 
+            etapeIntro: 0,             // Index de la page actuelle
             pagesIntro: [
             {
                 titre: "Au 3 joyeux pirates ! ⚓",
@@ -58,12 +57,14 @@ Vue.createApp({
             ]
         };
     },
-    computed: 
-    {
-
-    },
     methods: 
     {
+        // ---------------------------- GESTION MESSAGES ET INTRO ----------------------------
+        /**
+         * Passe à la page suivante de l’intro ou démarre le jeu si c’est la dernière page
+         * 
+         * @returns {void}
+         */
         suivantIntro() 
         {
             if (this.etapeIntro < this.pagesIntro.length - 1) 
@@ -77,15 +78,33 @@ Vue.createApp({
             }
         },
 
+        /**
+         * Affiche un message à l'utilisateur dans une boîte de dialogue au centre de l'écran
+         * 
+         * @param {string} texte - Le texte du message à afficher
+         * @returns {void}
+         */
         afficherMessage(texte) 
         {
             this.messageTexte = texte;
         },
+
+        /**
+         * Ferme la boîte de message
+         * 
+         * @returns {void}
+         */
         fermerMessage() 
         {
             this.messageTexte = '';
         },
 
+        // ---------------------------- GESTION DEBUT ET FIN JEU ----------------------------
+        /**
+         * Démarre le jeu en initialisant le temps restant et en lançant le timer
+         * 
+         * @returns {void}
+         */
         demarrerJeu() {
 
             if(this.messageTexte !== '') 
@@ -109,6 +128,12 @@ Vue.createApp({
             }, 1000);
         },
 
+        /**
+         * Formate le temps en secondes en une chaîne de caractères MM : SS
+         * 
+         * @param {number} t - Le temps en secondes
+         * @returns {string} - Le temps formaté en MM : SS
+         */
         formatTemps(t) 
         {
             let min = Math.floor(t / 60);
@@ -116,51 +141,87 @@ Vue.createApp({
             return `${min.toString().padStart(2,'0')} : ${sec.toString().padStart(2,'0')}`;
         },
 
-
+        /**
+         * Termine le jeu en arrêtant le timer et en affichant le message de fin
+         * 
+         * @returns {void}
+         */
         terminerJeu() 
         {
-
             this.jeuEnCours = false;
             clearInterval(this.timer_interval); // stop le timer
 
+            // Si le temps est écoulé, le joueur a perdu
             if (this.tempsRestant <= 0) 
             {
                 this.afficherMessage("🐟​Il n'y a plus de temps ! Vous avez perdu. 🐟​");
-
+                this.redirectionMessage = "window.location.href='/'";
                 return;
             }
-
-            // Si le joueur a terminé avant la fin du temps
-            this.afficherPrompt = true;
+            // Si le joueur a terminé avant la fin du temps on lui demande son pseudo
+            else
+            {
+                this.afficherPrompt = true;
+            }
         },
 
+        /**
+         * Soumet le score du joueur en envoyant son pseudo et son temps restant au serveur
+         * 
+         * @returns {void}
+         */
         submit_score(){
-            let pseudo = this.messagePrompt.trim();
-            if(pseudo === '') 
+            // Vérification du pseudo
+            if(this.messagePrompt.trim() !== '') 
             {
-                alert("Veuillez entrer un pseudo valide.");
-                return;
+                // Envoi des données au serveur
+                let pseudo = this.messagePrompt.trim(); 
+                let donnees = new FormData();
+                donnees.append('pseudo', pseudo);
+                donnees.append('temps', this.tempsRestant);
+                fetch('/scores', 
+                {
+                    method: 'POST',
+                    body: donnees
+                })
+                .then(res => res.json())
+                .then(data => 
+                {
+                    // Gestion de la réponse du serveur
+                    if (data.status !== 'success')
+                    {
+                        this.afficherMessage("Désolé, une erreur est survenue lors de l'enregistrement de votre score.");
+                    }
+                    else
+                    {
+                        this.afficherMessage(`Félicitations ${pseudo} ! Votre score a été enregistré avec succès.`);
+                        this.redirectionMessage = "window.location.href='/'";
+                    }
+                });
+                this.afficherPrompt = false;
             }
-            this.afficherPrompt = false;
-
-            let donnees = new FormData();
-            donnees.append('pseudo', pseudo);
-            donnees.append('temps', this.tempsRestant);
-
-            fetch('/scores', 
+            else
             {
-                method: 'POST',
-                body: donnees
-            })
-            window.location.href = '/';
+                this.afficherMessage("Veuillez entrer un pseudo valide.");
+            }
         },
 
+        // ---------------------------- GESTION OBJETS ET CARTE ----------------------------
+
+        /**
+         * Soumet le code saisi par l'utilisateur pour un objet donné et vérifie s'il est correct
+         * 
+         * @param {Object} obj - L'objet pour lequel le code est soumis
+         * @param {string} codeSaisi - Le code saisi par l'utilisateur
+         * @returns {void}
+         */
         submit(obj, codeSaisi) 
         {
             fetch(`/objets?id=${obj.id}`)
                 .then(res => res.json())
                 .then(data => 
                 {
+                    // Vérification du code saisi
                     let codeCorrect = data[0]['code'];
                     if(codeSaisi === codeCorrect) 
                     {
@@ -181,12 +242,16 @@ Vue.createApp({
                 });
         },
 
-        // Ajout d'un marker sur la carte
+        /**
+         * Ajoute un marker pour un objet sur la carte
+         * 
+         * @param {Object} obj - L'objet à ajouter en tant que marker
+         * @returns {void}
+         */
         ajouterMarker(obj) 
         {
-
+            // Création du marker Leaflet
             let geo = JSON.parse(obj.geom);
-
             let marker = L.marker([geo.coordinates[1], geo.coordinates[0]], 
             {
                 title: obj.nom,
@@ -199,7 +264,7 @@ Vue.createApp({
                 })
             });
 
-            // Faire une disjoinction de cas sur le type de l'objet
+            // Faire une disjonction de cas sur le type de l'objet
             marker.on('click', () => {
                                         if(obj.type_objet === "récupérable") 
                                         {
@@ -254,25 +319,26 @@ Vue.createApp({
                                                     obj.leafletMarker.unbindPopup();
                                                 });
                                         }
-
                                         else if (obj.type_objet === "indication")
                                         {
                                             this.afficherIndice(obj)
                                         }
-                                        
-                                        
                                     }); 
 
             
-            // Si c’est un objet de départ, on l’ajoute à la carte
+            // Ajout du marker à la carte
             marker.addTo(this.markersGroup);
-            // Ajout de l'atribut referencant le marker Leaflet à l'objet
+
             obj.leafletMarker = marker;
             this.objetsDebloques.push(obj);
-            console.log(marker);
         },
 
-        // Ajout d'un objet à l'inventaire
+        /**
+         * Ajoute un objet à l'inventaire du joueur
+         * 
+         * @param {Object} obj - L'objet à ajouter à l'inventaire
+         * @returns {void}
+         */
         ajouterObjetInventaire(obj) 
         {
             // Vérifie si l'objet n'est pas déjà dans l'inventaire
@@ -290,30 +356,32 @@ Vue.createApp({
             }
         },
 
-        //Affichage des objets de la carte selon leur niveau de Zoom
+        /**
+         * Met à jour l'affichage des objets sur la carte en fonction du niveau de zoom actuel
+         * 
+         * @returns {void}
+         */
         majObjetsZoom() 
         {
-
-            if (!this.map){
-                console.log("La carte n'est pas encore initialisée.");
-                return};
-            
+            console.log(this.objetsDebloques);
             let zoomActuel = this.map.getZoom();
-            console.log("Zoom actuel :", zoomActuel);
 
-            // Mise à jour de l'affichage des markers existants en fonction du zoom
+            // Mise à jour de l'affichage des markers des objets débloqués en fonction du zoom
             this.objetsDebloques.forEach(obj => 
             {
                 let marker = obj.leafletMarker;
                 
+                // Si l'objet a été débloqué mais que son marker est null (objet récupéré ou supprimé après déblocage), on ne fait rien
                 if (marker == null) {
                     return;
                 }
-                console.log(marker.getPopup());
+
+                // Affichage ou masquage du marker en fonction du niveau de zoom
                 if (zoomActuel >= obj.zoom_min) 
                 {
-                    if (!this.markersGroup.hasLayer(marker) && (!this.inventaire.find(o => o.id === obj.id)))
+                    if (!this.markersGroup.hasLayer(marker))
                     {
+                        console.log(`Affichage de l'objet ${obj.nom} au zoom ${zoomActuel}`);
                         marker.addTo(this.markersGroup);
                     }
                 } 
@@ -327,39 +395,56 @@ Vue.createApp({
             });
         },
 
-        // Affichage du code
+        /**
+         * Affiche le code pour un objet de type "code"
+         * 
+         * @param {Object} obj - L'objet pour lequel afficher le code
+         * @returns {void}
+         */
         f_code(obj) 
         {
             obj.leafletMarker.bindPopup(`<div id="code"><h3> ${obj.code}</h3></div>`).openPopup();
         },
 
-        // Affichage de l'indice pour un objet bloqué par un autre objet
+        /**
+         * Affiche l'indice pour un objet bloqué par un autre objet
+         * 
+         * @param {Object} obj - L'objet pour lequel afficher l'indice
+         * @returns {void}
+         */
         afficherIndice(obj) 
         {
-            console.log("Affichage indice pour l'objet :", obj);
-             fetch(`/objets?id=${obj.id}`)
-                .then(res => res.json())
-                .then(data => 
-                {
-                    obj.leafletMarker.bindPopup(`<div id="indice"><h3><em>Indice :</em></h3><p> ${data[0]['indice']}</p></div>`).openPopup();
-                });
-            
+            // Ferme le popup actuel avant d'en ouvrir un nouveau
+            obj.leafletMarker.getPopup().unbindPopup();
+            obj.leafletMarker.closePopup();
+
+            obj.leafletMarker.bindPopup(`<div id="indice"><h3><em>Indice :</em></h3><p> ${obj.indice}</p></div>`).openPopup();
         },
 
-        // Sélectionner un objet dans l'inventaire
+        /**
+         * Sélectionner un objet dans l'inventaire
+         * 
+         * @param {Object} obj - L'objet à sélectionner
+         * @returns {void}
+         */
         selectionner_Objet(obj) 
         {
             if(this.objet_selectionne === obj) 
             {
-                this.objet_selectionne = null; // si on reclcic on désélectionne
+                this.objet_selectionne = null;
             } 
             else 
             {
-                this.objet_selectionne = obj; // clic = sélectionne l’objet 
+                this.objet_selectionne = obj; 
             }
         },
 
-        // Débloquer un objet bloqué par un autre objet
+        /**
+         * Débloque un objet sur la carte en utilisant un objet de l'inventaire ou un code
+         * @param {Object} obj - L'objet à débloquer
+         * @param {boolean} suppr_inventaire - Indique si on utilise un objet de l'inventaire pour débloquer
+         * @returns {void}
+         */
         debloquer(obj, suppr_inventaire = false) 
         {
             // Retirer le marker de la carte
@@ -375,7 +460,6 @@ Vue.createApp({
             }
 
             // Ajouter l'objet libéré à la carte
-            console.log(obj);
             fetch(`/objets?id=${obj.objet_libere}`)
                 .then(res => res.json())
                 .then(data => 
@@ -386,15 +470,19 @@ Vue.createApp({
                         this.ajouterMarker(obj_libere);
                     }
                 });
-    
         },
 
+        /**
+         * Active ou désactive la couche de triche sur la carte
+         * 
+         * @returns {void}
+         */
         afficherTriche(){
             this.tricheActive = !this.tricheActive;
 
             // Activer la couche de triche
             if(this.tricheActive) {
-                this.afficherMessage("Mode triche activé : tous les objets sont visibles sur la carte.");
+                this.afficherMessage("Mode triche activé.");
                 let urlCoucheTriche = 'http://localhost:8080/geoserver/Projet_Web/wms';
                 this.cheatTile = L.tileLayer.wms(urlCoucheTriche,
                     {
@@ -423,20 +511,10 @@ Vue.createApp({
                 zoomAnimation: true, // animations autorisées lors du zoom
             }).setView([1.045, 103.94], 9);
             
+        // Création de la couche de markers
         this.markersGroup = L.layerGroup().addTo(this.map);
-        /*
-        // Fix temporaire pour éviter les erreurs quand un marker n’a plus de map évite l'erreur _map is null cannot access property _latlonMarker...
-        this.map.on('zoomstart', () => 
-        {
-            // On empêche Leaflet d’essayer d’animer les markers supprimés
-            L.Marker.prototype._animateZoom = function (e) 
-            {
-                if (!this._map) return; 
-                const pos = this._map._latLngToNewLayerPoint(this._latlng, e.zoom, e.center).round();
-                this._setPos(pos);
-            };
-        });*/
 
+        // Ajout de la couche de tuiles OpenStreetMap
         L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', 
         {
             noWrap: true,
@@ -445,25 +523,18 @@ Vue.createApp({
         }).addTo(this.map);
 
         // Événement zoom
-         
         this.map.on('zoomend', () => 
         {
             this.majObjetsZoom();
-
-            // Restaure le comportement normal de Leaflet
-            //delete L.Marker.prototype._animateZoom;
         });
 
         // Récupère tous les objets de départ
         fetch('/objets')
             .then(res => res.json())
-            .then(data => data.forEach(obj => this.ajouterMarker(obj)));
-
-        /*
-        setTimeout(() => 
-        {
-            this.afficherIntro = true;
-        }, 2000);*/
-
+            .then(data => 
+                {
+                    data.forEach(obj => this.ajouterMarker(obj));
+                    this.majObjetsZoom();
+                });
     }   
 }).mount('#app');

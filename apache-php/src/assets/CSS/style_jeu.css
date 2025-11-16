@@ -170,6 +170,7 @@ button:hover {
   grid-row: 2;
   justify-content: center;
   align-items: center;
+  z-index: 10000;
 }
 
 .message-popup {

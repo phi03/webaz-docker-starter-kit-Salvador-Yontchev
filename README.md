@@ -22,30 +22,30 @@ Ce jeu d'escape game est conçu pour stimuler votre esprit, encourager la résol
 1. Cloner ce dépôt Git
    ```sh
    git clone https://github.com/phi03/webaz-docker-starter-kit-Salvador-Yontchev.git
-  ```
+   ```
 
 2. Se positionner dans le dossier du projet
    ```sh
    cd webaz-docker-starter-kit-Salvador-Yontchev
    ```
 
-4. Lancer Docker Desktop
+3. Lancer Docker Desktop
 
-3. Lancer les services Docker
+4. Lancer les services Docker
    ```sh
     docker compose up -d
-    ```
+   ```
 
-4. Extraire le contenu de workspaces.zip contenant les workspaces GeoServer
+5. Extraire le contenu de workspaces.zip contenant les workspaces GeoServer
 
-5. Copier les workspaces dans le conteneur GeoServer
+6. Copier les workspaces dans le conteneur GeoServer
    ```sh
    cp "chemin/vers/le/dossier/workspaces" webaz-docker-starter-kit-salvador-yontchev-geoserver-1:/opt/geoserver/data_dir/workspaces/
    ```
 
-6. Relancer le conteneur Docker
+7. Relancer le conteneur Docker
 
-7. Accéder à l'application web via http://localhost:1234
+8. Accéder à l'application web via http://localhost:1234
 
 ## Architecture de l’environnement
 
