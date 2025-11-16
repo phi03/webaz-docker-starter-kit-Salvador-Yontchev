@@ -75,7 +75,7 @@ VALUES
  il me faudrait continuer vers le nord, où un canal légendaire m’ouvrirait la voie vers la Méditerranée…
  <h4>→ Suis le courant vers le nord, vers le canal de Suez.</h4>',
  NULL, NULL, NULL,
- ST_SetSRID(ST_MakePoint(42.73, 13.0), 4326), 10),
+ ST_SetSRID(ST_MakePoint(42.73, 13.0), 4326), 11),
 
 -- CANAL DE SUEZ
 
@@ -95,7 +95,7 @@ VALUES
 
 -- DÉTROIT DE GIBRALTAR
 
-(10, 'Porte du port', '../assets/img/port.png', TRUE, FALSE, 'bloqué_par_code',
+(10, 'Porte du port', '../assets/img/port.png', TRU, FALSE, 'bloqué_par_code',
  'La porte semble bloquée par un code... On peut y lire l’inscription suivante : ce fut une crise énergétique mondiale,
  un véritable blocage commercial et une guerre sans précédent ! Mais quand est ce que c’était déjà ?',
  NULL, 11, 1973,
@@ -117,7 +117,7 @@ VALUES
 
 -- CANAL DE PANAMA
 
-(13, 'Panneau du canal de Panama', '../assets/img/panneau.png', TRUE, FALSE, 'indication',
+(13, 'Panneau du canal de Panama', '../assets/img/panneau.png', FALSE, FALSE, 'indication',
  'Je franchis ensuite le canal de Panama, long de 80 km et fréquenté par 14 000 navires chaque année, 
  reliant l’Atlantique au Pacifique. Les écosystèmes fragiles des rivières et marais m’inspiraient le respect,
  Je m’y arrêtai quelques jours, le temps d’y consigner mes aventures dans mon journal, profiter d’une taverne proche des portes de l’écluse pour ne rien oublier.
@@ -125,7 +125,7 @@ VALUES
  NULL, NULL, NULL,
  ST_SetSRID(ST_MakePoint(-79.62, 9.03), 4326), 10),
 
-(14, 'Portes de l’écluse', '../assets/img/porte.png', TRUE, FALSE, 'bloqué_par_objet',
+(14, 'Portes de l’écluse', '../assets/img/porte.png', FALSE, FALSE, 'bloqué_par_objet',
  'Les lourdes portes de l’écluse sont bloquées. Un espace circulaire semble s’y trouver à quoi cela peut-il bien correspondre...',
  1, 15, NULL,
  ST_SetSRID(ST_MakePoint(-79.70, 9.05), 4326), 11),
