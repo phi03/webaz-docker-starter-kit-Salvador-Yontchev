@@ -1,4 +1,3 @@
-
 Vue.createApp({
   data() {
     return {
@@ -8,10 +7,12 @@ Vue.createApp({
 
     };
     },
-    computed: {
-
-    },
     methods: {
+      /**
+       * Affiche le message d'information de bienvenue et les indications de jeu.
+       * 
+       * @return {void}
+       */
       f_messageInfo() {
         this.messageInfo = `<h1> Bienvenue sur ....... ! </h1> 
         <p>Ohé du bateau ! Bien le bonjour mousaillons !
@@ -48,8 +49,12 @@ Vue.createApp({
 
         `;
       },
+      /**
+       * Affiche la page des meilleurs scores.
+       * 
+       * @return {void}
+       */
       f_messagefame() {
-        
         fetch('/score')
             .then(res => res.json())
             .then(data => {
@@ -57,10 +62,19 @@ Vue.createApp({
                 this.messagefame = true; 
             });
         },
-
+      /**
+       * Ferme le message d'information.
+       * 
+       * @return {void}
+       */
       fermerMessageInfo() {
         this.messageInfo = '';
       },
+      /**
+       * Ferme la page des meilleurs scores.
+       * 
+       * @return {void}
+       */
       fermerMessagefame() {
         this.messagefame= false;
       }

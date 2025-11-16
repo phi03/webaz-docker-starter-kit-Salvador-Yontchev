@@ -1,5 +1,6 @@
-@import url(https://fonts.bunny.net/css?family=angkor:400|im-fell-english:400);
+@import url('https://fonts.googleapis.com/css2?family=Libertinus+Sans:ital,wght@0,400;0,700;1,400&display=swap');
 
+/* ---------- BASE ---------- */
 body {
     margin: 0;
     height: 100vh;
@@ -34,18 +35,34 @@ body::before {
     z-index: 1;
 }
 
+#foot {
+    text-align: center;
+    font-size: 1em;
+    font-style: italic;
+    margin-top: 20px;
+}
+
+/* ---------- TITRES ---------- */
 h1 {
     grid-column: 1;
     margin-top: 0;
     margin-bottom: 30px;
     text-align: center;
-    font-family: 'Angkor', sans-serif; 
+    font-family: "Libertinus Sans", sans-serif;
     font-size: 5em;
     color: white;
     -webkit-text-stroke: 1px black;
-
 }
 
+h2 {
+    grid-column: 1;
+    margin-bottom: 20px;
+    font-family: "Libertinus Sans", sans-serif;
+    font-size: 2em;
+    text-align: center;
+}
+
+/* ---------- INFO ---------- */
 #Info h1, h2{
     background-color: lightblue;
     border-radius: 20px;
@@ -75,69 +92,6 @@ h1 {
     content: "⚓​";     
     position: absolute;
     left: 0;
-}
-
-#fame{ 
-    grid-column: 1;
-    font-size: 1.2em;
-    color: #333;
-    text-align: justify;
-    margin-bottom: 20px;
-    min-height: 660px;
-
-}
-
-#fame h1 {
-    background-color: lightblue;
-    font-size: 4em;
-    border-radius: 20px;
-    color: white;
-    -webkit-text-stroke: 1px black;
-    padding: 0.1em;
-}
-
-#fame ol li {
-    list-style-type: decimal ;
-    position: relative;
-    padding-left: 25px; 
-    text-align: left;
-    font-size: 1.2em;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-
-h2 {
-    grid-column: 1;
-    margin-bottom: 20px;
-    font-family: 'Angkor', sans-serif; 
-    font-size: 2em;
-    text-align: center;
-}
-
-form {
-    display: grid;
-    grid-template-rows: auto auto auto;
-    gap: 20px;
-    justify-items: center;
-    align-items: center;
-}
-
-button {
-    background-color: white;
-    border: 2px solid #333;
-    border-radius: 10px;
-    padding: 10px 20px;
-    font-size: 1.1em;
-    cursor: pointer;
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-    height: 60px;
-    width: 200px;
-    margin: 10px;
-}
-
-button:hover {
-    background-color: lightblue;
 }
 
 #message{
@@ -188,16 +142,65 @@ button:hover {
     cursor: pointer;
     height: 50px;
     width: 150px;
-    font-family: 'Angkor', sans-serif; 
+    font-family: "Libertinus Sans", sans-serif;
     color: white;
     -webkit-text-stroke: 1px black;
 }
 
-#foot {
-    text-align: center;
-    font-size: 1em;
-    font-style: italic;
-    margin-top: 20px;
+/* ---------- HALL OF FAME ---------- */
+#fame{ 
+    grid-column: 1;
+    font-size: 1.2em;
+    color: #333;
+    text-align: justify;
+    margin-bottom: 20px;
+    min-height: 660px;
+
+}
+
+#fame h1 {
+    background-color: lightblue;
+    font-size: 4em;
+    border-radius: 20px;
+    color: white;
+    -webkit-text-stroke: 1px black;
+    padding: 0.1em;
+}
+
+#fame ol li {
+    list-style-type: decimal ;
+    position: relative;
+    padding-left: 25px; 
+    text-align: left;
+    font-size: 1.2em;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+/* ---------- BOUTONS ---------- */
+form {
+    display: grid;
+    grid-template-rows: auto auto auto;
+    gap: 20px;
+    justify-items: center;
+    align-items: center;
+}
+
+button {
+    background-color: white;
+    border: 2px solid #333;
+    border-radius: 10px;
+    padding: 10px 20px;
+    font-size: 1.1em;
+    cursor: pointer;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    height: 60px;
+    width: 200px;
+    margin: 10px;
+}
+
+button:hover {
+    background-color: lightblue;
 }
 
 
