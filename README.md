@@ -1,84 +1,64 @@
-# Docker Starter Kit
+# [Nom du projet]
 
-Construit un environnement Docker avec Apache+PHP+Flight, Postgres/PostGIS, pgAdmin, GeoServer.
+Ce jeu est un escape game maritime pédagogique sur le thème de la piraterie, développé dans le cadre du cours de développement web en l'ING2
 
-## Structure générale
+## Description
 
-L’environnement est composé de 4 services (définis dans `docker-compose.yml`) :
+Ce jeu d'escape game est conçu pour stimuler votre esprit, encourager la résolution de problèmes et offrir une expérience immersive sur le thème du transport maritime. En relevant les défis proposés, vous aurez l'occasion de comprendre l'importance stratégique des grandes routes maritimes à travers le monde, dans un contexte à fortes pressions géopolitiques mais aussi environnementales. Alors laissez vous transporter dans un univers d'aventure et de mystère.
 
-| Service                | Nom interne | Rôle                                    | Ports exposés (hôte:docker) | Volume principal                         |
-| ---------------------- | ----------- | --------------------------------------- | --------------------------- | ---------------------------------------- |
-| **Apache+PHP**         | web         | Serveur web pour application Flight PHP | `1234:80`                   | `./apache-php/src:/var/www/html`         |
-| **PostgreSQL+PostGIS** | db          | Base de données spatiale                | `5432`                      | `pg_data:/var/lib/postgresql/data`       |
-| **pgAdmin**            | pgadmin     | Interface web pour gérer Postgres       | `5050:80`                   | `pgadmin_data:/var/lib/pgadmin`          |
-| **GeoServer**          | geoserver   | Serveur cartographique (WMS, WFS, WCS)  | `8080:8080`                 | `geoserver_data:/opt/geoserver/data_dir` |
+## Technologies utilisées
 
-## Détails des services
+- **Front-end :** HTML, CSS, JavaScript, Vue.js  
+- **Back-end :** PHP avec FlightPHP  
+- **Cartographie :** Leaflet  
+- **Environnement :** Docker Desktop
 
-### Apache+PHP+Flight
+## Prérequis
 
-- basé sur `./apache-php/Dockerfile`
-- fichiers sources dans `./apache-php/src`
-- http://localhost:1234
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) installé et fonctionnel
 
-### Postgres+PostGIS
+## Installation et lancement
 
-- user: `postgres`, pass: `postgres`, base: `mydb`, port: `5432`
-- exécute `./db/init.sql` au premier démarrage (contruit une table points, avec 3 points)
+1. Cloner ce dépôt Git
+   ```sh
+   git clone https://github.com/phi03/webaz-docker-starter-kit-Salvador-Yontchev.git
+  ```
 
-### pgadmin
+2. Se positionner dans le dossier du projet
+   ```sh
+   cd webaz-docker-starter-kit-Salvador-Yontchev
+   ```
 
-- user: `admin@admin.com`, pass: `admin`
-- permet de se connecter à postgres si besoin (host `db`, port `5432`, user/pass, sans SSL)
-- http://localhost:5050
+4. Lancer Docker Desktop
 
-### GeoServer
+3. Lancer les services Docker
+   ```sh
+    docker compose up -d
+    ```
 
-- user: `admin`, pass: `geoserver`
-- http://localhost:8080/geoserver
+4. Extraire le contenu de workspaces.zip contenant les workspaces GeoServer
 
-## Volumes & persistance
+5. Copier les workspaces dans le conteneur GeoServer
+   ```sh
+   cp "chemin/vers/le/dossier/workspaces" webaz-docker-starter-kit-salvador-yontchev-geoserver-1:/opt/geoserver/data_dir/workspaces/
+   ```
 
-Les volumes Docker permettent de conserver les données même si le conteneur est supprimé et/ou relancé :
+6. Relancer le conteneur Docker
 
-- un volume pour Apache+PHP (monté sur le dossier `./apache-php/src`)
-- trois autres volumes Docker pour les données (attention, les données de ces volumes ne sont pas accessibles en local, voir «Sauvegarde» plus loin)
+7. Accéder à l'application web via http://localhost:1234
 
-```yml
-volumes:
-  pg_data:
-  pgadmin_data:
-  geoserver_data:
-```
+## Architecture de l’environnement
 
-- `pg_data` stocke la base PostGIS (schémas, données, utilisateurs)
-- `pgadmin_data` stocke les données pgadmin (connexions)
-- `geoserver_data` stocke la configuration GeoServer (workspaces)
+Le projet se divise en plusieurs dossiers principaux :
 
-## Commandes de base
+- `./apache-php/` : contient le Dockerfile pour le service Apache+PHP et le code source de l’application web
+  - `./apache-php/src/` : code source de l’application web (HTML, CSS, JS, PHP)
+    - `./apache-php/src/assets/` : ressources statiques (images, styles, scripts)
+    - `./apache-php/src/views/` : vues HTML de l’application
+    - `./apache-php/src/index.php` : routes du serveur PHP avec FlightPHP permettant de gérer les requêtes vers la base de données
+- `./db/` : contient le script SQL d’initialisation de la base de données PostGIS
 
-```sh
-# lance la stack Docker
-docker compose up
-docker compose up -d # en mode daemon
+## Auteurs
 
-# arrête la stack
-docker compose down
-docker compose down -v # supprime en plus les volumes
-```
-
-## Sauvegarde
-
-Pour récupérer en local les données de la BDD et de GeoServer, exécutez les scripts respectifs depuis la racine du projet
-
-```sh
-# Copie des workspaces GeoServer
-# docker compose cp <container>:<from> <to>
-docker compose cp geoserver:/opt/geoserver/data_dir/workspaces/. ./geoserver-workspaces/
-
-# Export SQL de la base (dump)
-docker compose exec -t db pg_dump --inserts -U postgres -d mydb > "./db/backup.sql"
-```
-
-- un dossier `./geoserver-workspaces` est créé pour les données des workspaces GeoServer
-- un fichier `./db/backup.sql` est créé pour un dump de la BDD
+- Sophie-Amandine SALVADOR
+- Grégory YONTCHEV
