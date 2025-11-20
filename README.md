@@ -56,7 +56,7 @@ Le projet se divise en plusieurs dossiers principaux :
     - `./apache-php/src/assets/` : ressources statiques (images, styles, scripts)
     - `./apache-php/src/views/` : vues HTML de l’application
     - `./apache-php/src/index.php` : routes du serveur PHP avec FlightPHP permettant de gérer les requêtes vers la base de données
-- `./db/` : contient le script SQL d’initialisation de la base de données PostGIS
+- `./db/` : contient le script SQL d’initialisation de la base de données PostGIS "init.sql"
 
 ## Auteurs
 

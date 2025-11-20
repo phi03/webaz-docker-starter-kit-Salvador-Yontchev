@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chasse aux trésors | S.A.S & G.Y</title>
+    <title>S.G Quest</title>
 
     <link rel="apple-touch-icon" sizes="57x57" href="../assets/favicone/apple-icon-57x57.png">
     <link rel="apple-touch-icon" sizes="60x60" href="../assets/favicone/apple-icon-60x60.png">
