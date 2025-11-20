@@ -14,7 +14,7 @@ Vue.createApp({
        * @return {void}
        */
       f_messageInfo() {
-        this.messageInfo = `<h1> Bienvenue sur ....... ! </h1> 
+        this.messageInfo = `<h1> Bienvenue sur S.G Quest ! </h1> 
         <p>Ohé du bateau ! Bien le bonjour mousaillons !
         Êtes-vous prêts à relever le défi ? Avant de vous lancer n'hésitez pas à jeter un oeil aux indications de jeu... Parole de Pirate ! </p>
 

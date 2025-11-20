@@ -1,4 +1,4 @@
-# [Nom du projet]
+# S.G Quest
 
 Ce jeu est un escape game maritime pédagogique sur le thème de la piraterie, développé dans le cadre du cours de développement web en l'ING2
 
@@ -40,7 +40,7 @@ Ce jeu d'escape game est conçu pour stimuler votre esprit, encourager la résol
 
 6. Copier les workspaces dans le conteneur GeoServer
    ```sh
-   cp "chemin/vers/le/dossier/workspaces" webaz-docker-starter-kit-salvador-yontchev-geoserver-1:/opt/geoserver/data_dir/workspaces/
+   docker cp "chemin/vers/le/dossier/workspaces" webaz-docker-starter-kit-salvador-yontchev-geoserver-1:/opt/geoserver/data_dir
    ```
 
 7. Relancer le conteneur Docker

@@ -23,7 +23,9 @@ Vue.createApp({
             tricheActive: false,       // Affichage couche de triche
 
             afficherIntro: true,      // Affichage intro 
-            etapeIntro: 0,             // Index de la page actuelle
+            afficherOutro: false,     // Affichage outro
+            etapeIntro: 0,             // Index de la page actuelle de l'intro
+            etapeOutro: 0,             // Index de la page actuelle de l'outro
             pagesIntro: [
             {
                 titre: "Au 3 joyeux pirates ! ⚓",
@@ -45,7 +47,7 @@ Vue.createApp({
             },
             {
                 titre: "Soyez attentif, curieux et stratégique ⚓",
-                texte: `<p>Votre objectif : arriver à ouvrir le coffre du capitaine SG échoué quelque part près de Doumai 
+                texte: `<p>Votre objectif : arriver à ouvrir le coffre du capitaine SG échoué quelque part près de Dumai 
                             sur les rives du détroit de Malacca.</p>
                         <p>Mais attention votre temps est limité ! Il ne vous restera plus que 10 minutes à partir du moment ou vous quitterez cette page ! </p>
                         <p>Pour cela collectez les objets présents sur la carte et faites attention aux panneaux... 
@@ -53,6 +55,45 @@ Vue.createApp({
                         <p>Un bouton triche est à votre disposition si vous vous sentez perdu.</p>
                         <div id = "pfin"><p>Bonne chance matelot ! 🦜​ </p></div>`,
                 bouton: "Commencer l’aventure 🚢"
+            }
+            ],
+            pagesOutro: [
+            {
+                titre: "De retour au détroit de Malacca...",
+                texte: `Ohé moussaillons !! Vous êtes enfin de retour ? Fantastique alors ce trésor vous l'avez ouvert ? 
+                        Vous ouvrez le coffre, un nuage de poussière s'en échappe... Mais il est vide !! Pas un sou, pas un diamant... 
+                        rien ! Comment ça rien mai non mais vous êtes miope ma parole !! ah attendez si mais si là... mai non plus près !
+                        Vous vous approcher et sur le fond du coffre une inscription vous apparait alors...</p>`,
+                bouton: "Lire l'inscription 📜"
+            },
+            {
+                titre: "Recette du Sancocho : ragoût national du Panama",
+                texte: `<p>Ingrédients :</p>
+                        <ul>
+                            <li>1 poulet découpé en morceaux</li>
+                            <li>2 litres d'eau</li>
+                            <li>4 à 5 pommes de terre</li>
+                            <li>2 épis de maïs coupés en tronçons</li>
+                            <li>1 oignon haché</li>
+                            <li>2 tomates coupées en dés</li>
+                            <li>2 gousse d'ail émincée</li>
+                            <li>1 branche de céleri hachée</li>
+                            <li>1 bouquet de culantro (coriandre)</li>
+                            <li>1 poivron vert coupé en dés</li>
+                            <li>sel</li>
+                            <li>poivre</li>
+                            <li>cumin</li>
+                        </ul>
+                        <p>Préparation :</p>
+                        <ul>
+                        <li>Dans une grande marmite, faites bouillir l'eau et ajoutez les morceaux de poulet. Laissez cuire pendant environ 30 minutes en écumant régulièrement.</li>
+                        <li>Ajoutez les pommes de terre, le maïs, l'oignon, les tomates, l'ail, le céleri, le culantro et le poivron vert. Assaisonnez avec du sel, du poivre et du cumin selon votre goût.</li>
+                        <li>Laissez mijoter pendant encore 20 minutes, jusqu'à ce que les légumes soient tendres retirer le poulet une fois bien cuit.</li>
+                        <li>Servez chaud, accompagné de riz blanc et de tranches d'avocat. Bon appétit !</li>
+                        </ul>
+                        <p>Vous fermez le coffre, un peu déçu mais avec une nouvelle recette en tête pour régaler vos amis à votre retour au port.</p>
+`,
+                bouton: "Terminer l'aventure !"
             }
             ]
         };
@@ -75,6 +116,24 @@ Vue.createApp({
             {
                 this.afficherIntro = false; // quitte l’intro
                 this.demarrerJeu()
+            }
+        },
+
+        /**
+         * Passe à la page suivante de l’outro ou affiche le prompt si c’est la dernière page
+         * 
+         * @returns {void}
+         */
+        suivantOutro()
+        {
+            if (this.etapeOutro < this.pagesOutro.length - 1) 
+            {
+                this.etapeOutro++;       // passe la page
+            }
+            else 
+            {
+                this.afficherOutro = false; // quitte l’outro
+                this.afficherPrompt = true;
             }
         },
 
@@ -161,7 +220,7 @@ Vue.createApp({
             // Si le joueur a terminé avant la fin du temps on lui demande son pseudo
             else
             {
-                this.afficherPrompt = true;
+                this.afficherOutro = true;
             }
         },
 
@@ -325,7 +384,6 @@ Vue.createApp({
                                         }
                                     }); 
 
-            
             // Ajout du marker à la carte
             marker.addTo(this.markersGroup);
 
@@ -363,7 +421,6 @@ Vue.createApp({
          */
         majObjetsZoom() 
         {
-            console.log(this.objetsDebloques);
             let zoomActuel = this.map.getZoom();
 
             // Mise à jour de l'affichage des markers des objets débloqués en fonction du zoom
@@ -381,7 +438,6 @@ Vue.createApp({
                 {
                     if (!this.markersGroup.hasLayer(marker))
                     {
-                        console.log(`Affichage de l'objet ${obj.nom} au zoom ${zoomActuel}`);
                         marker.addTo(this.markersGroup);
                     }
                 } 
@@ -403,6 +459,12 @@ Vue.createApp({
          */
         f_code(obj) 
         {
+            // Ferme le popup actuel si il y en a une ouverte avant d'en ouvrir un nouveau
+            if (obj.leafletMarker.getPopup() !== undefined && obj.leafletMarker.getPopup() !== null)
+            {
+                obj.leafletMarker.unbindPopup();
+                obj.leafletMarker.closePopup();
+            }
             obj.leafletMarker.bindPopup(`<div id="code"><h3> ${obj.code}</h3></div>`).openPopup();
         },
 
@@ -414,9 +476,12 @@ Vue.createApp({
          */
         afficherIndice(obj) 
         {
-            // Ferme le popup actuel avant d'en ouvrir un nouveau
-            obj.leafletMarker.getPopup().unbindPopup();
-            obj.leafletMarker.closePopup();
+            // Ferme le popup actuel si il y en a une ouverte avant d'en ouvrir un nouveau
+            if (obj.leafletMarker.getPopup() !== undefined && obj.leafletMarker.getPopup() !== null)
+            {
+                obj.leafletMarker.unbindPopup();
+                obj.leafletMarker.closePopup();
+            }
 
             obj.leafletMarker.bindPopup(`<div id="indice"><h3><em>Indice :</em></h3><p> ${obj.indice}</p></div>`).openPopup();
         },
@@ -447,9 +512,6 @@ Vue.createApp({
          */
         debloquer(obj, suppr_inventaire = false) 
         {
-            // Retirer le marker de la carte
-            obj.leafletMarker.closePopup();
-            obj.leafletMarker.unbindPopup();
             this.markersGroup.removeLayer(obj.leafletMarker);
             obj.leafletMarker = null;
 
@@ -508,7 +570,7 @@ Vue.createApp({
         // Création de la carte Leaflet
         this.map = L.map('map', 
             {
-                zoomAnimation: true, // animations autorisées lors du zoom
+                zoomAnimation: false, // animations autorisées lors du zoom
             }).setView([1.045, 103.94], 9);
             
         // Création de la couche de markers

@@ -52,6 +52,7 @@ h1 {
     font-size: 5em;
     color: white;
     -webkit-text-stroke: 1px black;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 h2 {
@@ -60,6 +61,7 @@ h2 {
     font-family: "Libertinus Sans", sans-serif;
     font-size: 2em;
     text-align: center;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 /* ---------- INFO ---------- */
@@ -145,6 +147,7 @@ h2 {
     font-family: "Libertinus Sans", sans-serif;
     color: white;
     -webkit-text-stroke: 1px black;
+    justify-content: center;
 }
 
 /* ---------- HALL OF FAME ---------- */

@@ -30,7 +30,7 @@
 <body>
         <div id ="app">
 
-            <h1>Nom du Jeu</h1>
+            <h1>S.G Quest</h1>
 
             <button onclick="window.location.href='/jeu'">Commencer le jeu</button>
 
@@ -47,7 +47,7 @@
                     <h1 id="title_fame">Hall of Fame</h1>
                     <ol>
                         <li v-for="score in topScores" :key="score.id">
-                            {{ score.pseudo }} - {{ score.temps }}
+                            {{ score.pseudo }} - {{ score.temps }} points
                         </li>
                     </ol>
                     <button @click="fermerMessagefame">OK</button>

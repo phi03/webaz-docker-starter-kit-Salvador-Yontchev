@@ -41,7 +41,7 @@
                     {{ formatTemps(tempsRestant) }}</p>
                 </div>
 
-                <h1>Nom du jeu</h1>
+                <h1>S.G Quest</h1>
 
                 <div id="menu">
                     <button id ="btn-menu" onclick="window.location.href='/'">Menu</button>
@@ -54,6 +54,16 @@
                         <p v-html="pagesIntro[etapeIntro].texte"></p>
                         <button @click="suivantIntro">
                         {{ pagesIntro[etapeIntro].bouton }}
+                        </button>
+                    </div>
+                </div>
+
+                <div v-if="afficherOutro" class="intro-bandeau">
+                    <div class="intro-contenu">
+                        <h2 v-html="pagesOutro[etapeOutro].titre"></h2>
+                        <p v-html="pagesOutro[etapeOutro].texte"></p>
+                        <button @click="suivantOutro">
+                        {{ pagesOutro[etapeOutro].bouton }}
                         </button>
                     </div>
                 </div>
